@@ -2,8 +2,12 @@
 // https://github.com/microsoft/vscode-dev-containers/tree/v0.106.0/containers/azure-functions-dotnetcore-3.1
 {
 	"name": "Azure Functions & C# (.NET Core 3.1)",
-	"dockerFile": "Dockerfile",
-	"forwardPorts": [ 7071 ],
+
+	"dockerComposeFile": "docker-compose.devcontainer.yml",
+	"service": "vscode",
+	"shutdownAction": "stopCompose",
+	"workspaceFolder": "/workspace",
+	// "postCreateCommand": "dotnet restore",
 
 	// Set *default* container specific settings.json values on container create.
 	"settings": { 
@@ -13,10 +17,11 @@
 	// Add the IDs of extensions you want installed when the container is created.
 	"extensions": [
 		"ms-azuretools.vscode-azurefunctions",
-		"ms-vscode.csharp"
+		"ms-vscode.csharp",
+		"ms-dotnettools.csharp"
 	],
 	
-	"containerEnv":{
+	"remoteEnv":{
 		"tenantId": "<the tenant id>",
 		"appClientId": "<the client id of the aad app>",
 		"appClientSecret": "<the secret for aad app>",

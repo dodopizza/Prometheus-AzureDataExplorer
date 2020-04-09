@@ -64,7 +64,7 @@ namespace PrometheusWrite
 
             log.LogInformation("[PrometehusWrite] Connecting to storage account");
 
-            var storageAccount = CloudStorageAccount.Parse(Environment.GetEnvironmentVariable("prometheusStorage"));
+            var storageAccount = CloudStorageAccount.Parse(Environment.GetEnvironmentVariable("blobStorageConnectionString"));
             var client = storageAccount.CreateCloudBlobClient();
             var container = client.GetContainerReference("prometheus");
             // await container.CreateIfNotExistsAsync();
@@ -103,6 +103,7 @@ namespace PrometheusWrite
                 }
             }
 
+            log.LogInformation("[PrometehusWrite] Done");
             return new OkResult();
 
             // string name = req.Query["name"];

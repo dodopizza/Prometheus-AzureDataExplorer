@@ -1,0 +1,26 @@
+global:
+  scrape_interval:     15s
+  evaluation_interval: 15s
+scrape_configs:
+  - job_name: prometheus
+    static_configs:
+      - targets: ['localhost:9090']
+  - job_name: node-exporter
+    static_configs:
+      - targets: ['node-exporter:9100']
+  - job_name: pagerduty-exporter
+    static_configs:
+      - targets: ['pagerduty-exporter:8080']
+remote_write:
+  - url: "http://vscode:7071/api/Write"
+    remote_timeout: 30s
+    queue_config:
+        capacity: 10000
+        max_shards: 10
+        min_shards: 1
+        max_samples_per_send: 400
+        batch_send_deadline: '10s'
+        min_backoff: '30ms'
+        max_backoff: '100ms'
+remote_read:
+  - url: "http://vscode:7071/api/Read"
