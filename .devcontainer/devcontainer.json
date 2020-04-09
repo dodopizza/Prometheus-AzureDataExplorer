@@ -14,7 +14,16 @@
 	"extensions": [
 		"ms-azuretools.vscode-azurefunctions",
 		"ms-vscode.csharp"
-	]
+	],
+	
+	"containerEnv":{
+		"tenantId": "<the tenant id>",
+		"appClientId": "<the client id of the aad app>",
+		"appClientSecret": "<the secret for aad app>",
+	
+		"blobStorageConnectionString": "DefaultEndpointsProtocol=https;AccountName=devprometheus;AccountKey=k6MQGvpIQ97TwSEbRm0wbN7/JlrICnJwdfZ/l0MASPE1sCNjbV6Yq1Co8ZLaJ91cYxYuIuYBcmIOUspfWGEInA==;EndpointSuffix=core.windows.net",
+		"kustoUrl": "https://dododevkusto.westeurope.kusto.windows.net"
+	}
 
 	// Use 'postCreateCommand' to run commands after the container is created.
 	// "postCreateCommand": "dotnet restore",
