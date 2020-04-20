@@ -1,6 +1,6 @@
 ## Presetup 
 ```
-donet restore
+dotnet restore
 ```
 
 ## From prometheus to Kusto injestion flow
@@ -25,13 +25,11 @@ donet restore
 ```
 
 
-## Get metrics
+## Get metrics example
 ```
 Metrics
 | where tolong(Timestamp) between (1587000000000 .. 1587376860000) and ( Name == "node_disk_io_now" )
-| order by Timestamp desc
-| take 1000
-| extend timed = unixtime_milliseconds_todatetime(tolong(Timestamp))
+| order by Timestamp asc
 | extend timeval = pack( "Timestamp", Timestamp, "Value", Value )
 | summarize Samples=make_list(timeval) by tostring(Labels)
 | extend timeseries=pack( "Samples", Samples, "Labels", parse_json(Labels) )
