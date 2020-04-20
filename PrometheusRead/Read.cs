@@ -97,6 +97,7 @@ namespace PrometheusRead
 
             foreach (var aQuery in readrequest.Queries)
             {
+
                 var kustosql = string.Format(
                     MetricaQueryTemplate,
                     aQuery.StartTimestampMs,
@@ -111,14 +112,15 @@ namespace PrometheusRead
 
                 log.LogInformation($"KQL: {kustosql}");
 
-                // tasklist.Add(
-                //     adx.ExecuteQueryAsync(
-                //         databaseName: Environment.GetEnvironmentVariable("DATABASE"), 
-                //         query: sb.ToString(), 
-                //         null
-                //     )
-                // );
-            }
+                tasklist.Add(
+                    adx.ExecuteQueryAsync(
+                        databaseName: Environment.GetEnvironmentVariable("kustoDatabase"), 
+                        query: kustosql, 
+                        null
+                    )
+                );
+
+            } // - foreach readrequest.Queries
 
             Task.WaitAll(tasklist.ToArray());
 
