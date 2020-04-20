@@ -45,7 +45,7 @@ namespace PrometheusRead
             var decompressed = Conversion.DecompressBody(req.Body);
             if (decompressed != null)
             {
-                InitializeKustoClient(log);
+                // InitializeKustoClient(log);
 
                 var readrequest = ReadRequest.Parser.ParseFrom(decompressed);
                 log.LogMetric("querycount", readrequest.Queries.Count, new Dictionary<String, object>() { { "type", "count" } });
@@ -53,25 +53,7 @@ namespace PrometheusRead
                 ReadResponse response = CreateResponse(readrequest, log);
             }
 
-
-
-
-
-
-
-            // log.LogInformation("C# HTTP trigger function processed a request.");
-
-            // string name = req.Query["name"];
-
-            // string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            // dynamic data = JsonConvert.DeserializeObject(requestBody);
-            // name = name ?? data?.name;
-
-            // string responseMessage = string.IsNullOrEmpty(name)
-            //     ? "This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response."
-            //     : $"Hello, {name}. This HTTP triggered function executed successfully.";
-
-            // return new OkObjectResult(responseMessage);
+            return new OkObjectResult("Test");
 
         } // - function Read
 
@@ -96,24 +78,46 @@ namespace PrometheusRead
             }
         } // - InitializeKustoClient
 
+
         private static ReadResponse CreateResponse(ReadRequest readrequest, ILogger log)
         {
             ReadResponse result = new ReadResponse();
 
             List<Task<IDataReader>> tasklist = new List<Task<IDataReader>>();
 
+            string MetricaQueryTemplate = @"
+                Metrics
+                | where tolong(Timestamp) between ({0} .. {1}) and ( {2} )
+                | order by Timestamp asc 
+                | extend timeval = pack( 'Timestamp', Timestamp, 'Value', Value )
+                | summarize Samples=make_list(timeval) by tostring(Labels)
+                | extend timeseries=pack( 'Samples', Samples, 'Labels', parse_json(Labels) )
+                | project timeseries
+            ";
+
             foreach (var aQuery in readrequest.Queries)
             {
-                StringBuilder sb = new StringBuilder();
-                sb.AppendLine($"SearchTimeseries({aQuery.StartTimestampMs}, {aQuery.EndTimestampMs})");
-                sb.AppendLine("| where " + String.Join(" and ", aQuery.Matchers.Select(aMatch => $"({GenerateValueExpression(aMatch.Name, aMatch.Type, aMatch.Value)})")));
-                sb.AppendLine("| summarize Samples=make_list(timeseries.Samples) by Labels=tostring(timeseries.Labels)");
-                sb.AppendLine("| extend timeseries=pack(\"Samples\", Samples, \"Labels\", parse_json(Labels))");
-                sb.AppendLine("| project timeseries");
+                var kustosql = string.Format(
+                    MetricaQueryTemplate,
+                    aQuery.StartTimestampMs,
+                    aQuery.EndTimestampMs,
+                    String.Join( 
+                        " and ", 
+                        aQuery.Matchers.Select(
+                            item => GenerateValueExpression(item.Name, item.Type, item.Value)
+                        ) 
+                    )
+                );
 
-                log.LogInformation($"KQL: {sb.ToString()}");
+                log.LogInformation($"KQL: {kustosql}");
 
-                tasklist.Add(adx.ExecuteQueryAsync(databaseName: Environment.GetEnvironmentVariable("DATABASE"), query: sb.ToString(), null));
+                // tasklist.Add(
+                //     adx.ExecuteQueryAsync(
+                //         databaseName: Environment.GetEnvironmentVariable("DATABASE"), 
+                //         query: sb.ToString(), 
+                //         null
+                //     )
+                // );
             }
 
             Task.WaitAll(tasklist.ToArray());
@@ -137,8 +141,36 @@ namespace PrometheusRead
             reader.Close();
 
             return result;
-        }
+        } // - QueryResult
 
+        private static String GenerateValueExpression(string name, LabelMatcher.Types.Type type, string value)
+        {
+            var KeyMap = new Dictionary<String, String>(){ 
+                { "__name__", "Name" },
+                { "job",      "Job" },
+                { "instance", "Instance" }
+            }; 
 
-    }
-}
+            string resultName = KeyMap.ContainsKey(name) ? KeyMap[name] : $"tostring(Labels.{name})";
+
+            string queryTemplate = "( {0} {1} '{2}' )";
+
+            switch (type)
+            {
+                case LabelMatcher.Types.Type.Eq:
+                    return string.Format(queryTemplate, resultName, "==", value );
+                case LabelMatcher.Types.Type.Neq:
+                    return string.Format(queryTemplate, resultName, "!=", value );
+                case LabelMatcher.Types.Type.Re:
+                    return string.Format(queryTemplate, resultName, "matches regex", value );
+                case LabelMatcher.Types.Type.Nre:
+                    return string.Format(queryTemplate, resultName, "!contains", value );
+                default:
+                    return String.Empty;
+            }
+
+        } // - GenerateValueExpression
+
+    } // - class Read
+
+} // - namespace PrometheusRead

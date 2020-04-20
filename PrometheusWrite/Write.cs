@@ -45,6 +45,8 @@ namespace PrometheusWrite
         [Index(4)]
         public string Labels { get; set; }
         [Index(5)]
+        public string LabelsProm { get; set; }
+        [Index(6)]
         public double Value { get; set; }
     }
 
@@ -128,6 +130,7 @@ namespace PrometheusWrite
             KustoRow kustoRow = new KustoRow();
             kustoRow.Timestamp = timeseries.Samples[0].Timestamp;
             kustoRow.Value = timeseries.Samples[0].Value;
+            var labelsDict = new Dictionary<string, string>();
             foreach (var label in timeseries.Labels)
             {
                 switch (label.Name)
@@ -142,9 +145,11 @@ namespace PrometheusWrite
                         kustoRow.Instance = label.Value;
                         break;
                 }
+                labelsDict[ label.Name ] = label.Value;
             }
 
-            kustoRow.Labels = JsonConvert.SerializeObject(timeseries.Labels);
+            kustoRow.Labels = JsonConvert.SerializeObject(labelsDict);
+            kustoRow.LabelsProm = JsonConvert.SerializeObject(timeseries.Labels);
 
             return kustoRow;
         }
