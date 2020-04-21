@@ -39,7 +39,7 @@ build/dotnet-dev-image:
         --progress=plain \
         --build-arg BUILDKIT_INLINE_CACHE=1 \
         --cache-from $CI_REGISTRY_IMAGE/dotnetdev:latest-cache \
-        --tag $CI_REGISTRY_IMAGE/dotnetdev:latest-cache
+        --tag $CI_REGISTRY_IMAGE/dotnetdev:latest-cache \
         .
     - docker push $CI_REGISTRY_IMAGE/dotnetdev:latest-cache
 
