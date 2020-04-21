@@ -1,7 +1,14 @@
+.only/refs/master:
+  only:
+    refs:
+      - master
+
+
 build/dotnet-dev-image:
   stage: build
   image: docker
   extends:
+    - .only/refs/master
     - .common/runners/dev
     - .common/dind_service
   script:
@@ -27,6 +34,7 @@ build/dotnet-dev-image:
 
 deploy/function/ld:
   extends:
+    - .only/refs/master
     - .common/runners/dev
     - .deploy/function
   environment:
