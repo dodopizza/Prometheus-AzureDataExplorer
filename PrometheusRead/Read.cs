@@ -47,7 +47,7 @@ namespace PrometheusRead
             var decompressed = Conversion.DecompressBody(req.Body);
             if (decompressed != null)
             {
-                // InitializeKustoClient(log);
+                InitializeKustoClient(log);
 
                 var readrequest = ReadRequest.Parser.ParseFrom(decompressed);
                 log.LogMetric("querycount", readrequest.Queries.Count, new Dictionary<String, object>() { { "type", "count" } });
