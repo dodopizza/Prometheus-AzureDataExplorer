@@ -51,6 +51,19 @@ RUN apt-get update \
     && apt-get update \
     && apt-get -y install azure-functions-core-tools-3 \
     #
+    # Install azure client
+    && curl -sL https://aka.ms/InstallAzureCLIDeb | bash \
+    #
+    # Install protobuf compiler (protoc)
+    && protoc_version=3.11.4 \
+    && protoc_dir=/tmp/protoc/ \
+    && install -d ${protoc_dir} \
+    && cd ${protoc_dir} \
+    && curl -L -o protoc.zip https://github.com/protocolbuffers/protobuf/releases/download/v${protoc_version}/protoc-${protoc_version}-linux-x86_64.zip \
+    && unzip protoc.zip \
+    && cp ${protoc_dir}/bin/protoc /usr/sbin/ \
+    && rm -rf ${protoc_dir} \
+    #
     # Clean up
     && apt-get autoremove -y \
     && apt-get clean -y \
@@ -61,10 +74,3 @@ RUN apt-get update \
 
 # Switch back to dialog for any ad-hoc use of apt-get
 ENV DEBIAN_FRONTEND=dialog
-
-# DODO
-COPY install-protoc.sh /install-protoc.sh
-RUN /install-protoc.sh
-
-COPY install-az.sh /install-az.sh
-RUN /install-az.sh

@@ -45,7 +45,7 @@ build/dotnet-dev-image:
 
 deploy/function:
   stage: deploy
-  image: $CI_REGISTRY_IMAGE/dotnetdev
+  image: $CI_REGISTRY_IMAGE/dotnetdev:latest-cache
   script:
     - dotnet restore
   dependencies:
