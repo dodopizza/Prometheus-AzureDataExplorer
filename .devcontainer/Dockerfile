@@ -65,3 +65,6 @@ ENV DEBIAN_FRONTEND=dialog
 # DODO
 COPY install-protoc.sh /install-protoc.sh
 RUN /install-protoc.sh
+
+COPY install-az.sh /install-az.sh
+RUN /install-az.sh
