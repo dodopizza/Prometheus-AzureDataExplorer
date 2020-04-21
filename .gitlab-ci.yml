@@ -1,5 +1,8 @@
 default:
   image: busybox
+  only:
+    refs:
+      - master
 
 stages:
   - build
