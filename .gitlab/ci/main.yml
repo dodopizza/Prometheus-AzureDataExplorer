@@ -21,7 +21,6 @@ build/dotnet-dev-image:
   image: $CI_REGISTRY_IMAGE/dotnetdev:latest-cache
   script:
     - ./.gitlab/scripts/01-az-login.sh SP_ADX
-    - dotnet restore
     - func azure functionapp publish ${FUNCTIONAPP_NAME}
   dependencies:
     - build/dotnet-dev-image
