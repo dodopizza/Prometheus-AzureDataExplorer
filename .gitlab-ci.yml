@@ -44,6 +44,7 @@ build/dotnet-dev-image:
     - docker push $CI_REGISTRY_IMAGE/dotnetdev:latest-cache
 
 deploy/function:
+  stage: deploy
   image: $CI_REGISTRY_IMAGE/dotnetdev
   script:
     - dotnet restore
