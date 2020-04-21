@@ -1,0 +1,36 @@
+build/dotnet-dev-image:
+  stage: build
+  image: docker
+  extends:
+    - .common/runners/dev
+    - .common/dind_service
+  script:
+    - cd .devcontainer
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - |
+      DOCKER_BUILDKIT=1 docker build \
+        --progress=plain \
+        --build-arg BUILDKIT_INLINE_CACHE=1 \
+        --cache-from $CI_REGISTRY_IMAGE/dotnetdev:latest-cache \
+        --tag $CI_REGISTRY_IMAGE/dotnetdev:latest-cache \
+        .
+    - docker push $CI_REGISTRY_IMAGE/dotnetdev:latest-cache
+
+.deploy/function:
+  stage: deploy
+  image: $CI_REGISTRY_IMAGE/dotnetdev:latest-cache
+  script:
+    - ./.gitlab/scripts/01-az-login.sh SP_ADX
+    - dotnet restore
+    - func azure functionapp publish ${FUNCTIONAPP_NAME}
+  dependencies:
+    - build/dotnet-dev-image
+
+deploy/function/ld:
+  extends:
+    - .common/runners/dev
+    - .deploy/function
+  environment:
+    name: ld/function
+  variables:
+    FUNCTIONAPP_NAME: ld-prometheus-adx

@@ -23,6 +23,7 @@ RUN apt-get update \
     # Verify git and needed tools are installed
     && apt-get -y install \
         git \
+        jq \
         openssh-client \
         less \
         unzip \
