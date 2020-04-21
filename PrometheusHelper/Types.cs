@@ -33,18 +33,26 @@ namespace Prometheus {
             "ZWxCBMjeHwAiggEKDExhYmVsTWF0Y2hlchIrCgR0eXBlGAEgASgOMh0ucHJv",
             "bWV0aGV1cy5MYWJlbE1hdGNoZXIuVHlwZRIMCgRuYW1lGAIgASgJEg0KBXZh",
             "bHVlGAMgASgJIigKBFR5cGUSBgoCRVEQABIHCgNORVEQARIGCgJSRRACEgcK",
-            "A05SRRADIkwKCVJlYWRIaW50cxIPCgdzdGVwX21zGAEgASgDEgwKBGZ1bmMY",
-            "AiABKAkSEAoIc3RhcnRfbXMYAyABKAMSDgoGZW5kX21zGAQgASgDQghaBnBy",
-            "b21wYmIGcHJvdG8z"));
+            "A05SRRADInwKCVJlYWRIaW50cxIPCgdzdGVwX21zGAEgASgDEgwKBGZ1bmMY",
+            "AiABKAkSEAoIc3RhcnRfbXMYAyABKAMSDgoGZW5kX21zGAQgASgDEhAKCGdy",
+            "b3VwaW5nGAUgAygJEgoKAmJ5GAYgASgIEhAKCHJhbmdlX21zGAcgASgDIosB",
+            "CgVDaHVuaxITCgttaW5fdGltZV9tcxgBIAEoAxITCgttYXhfdGltZV9tcxgC",
+            "IAEoAxIoCgR0eXBlGAMgASgOMhoucHJvbWV0aGV1cy5DaHVuay5FbmNvZGlu",
+            "ZxIMCgRkYXRhGAQgASgMIiAKCEVuY29kaW5nEgsKB1VOS05PV04QABIHCgNY",
+            "T1IQASJhCg1DaHVua2VkU2VyaWVzEicKBmxhYmVscxgBIAMoCzIRLnByb21l",
+            "dGhldXMuTGFiZWxCBMjeHwASJwoGY2h1bmtzGAIgAygLMhEucHJvbWV0aGV1",
+            "cy5DaHVua0IEyN4fAEIIWgZwcm9tcGJiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Gogoproto.GogoReflection.Descriptor, },
-          new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Prometheus.Sample), global::Prometheus.Sample.Parser, new[]{ "Value", "Timestamp" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Prometheus.TimeSeries), global::Prometheus.TimeSeries.Parser, new[]{ "Labels", "Samples" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Prometheus.Label), global::Prometheus.Label.Parser, new[]{ "Name", "Value" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Prometheus.Labels), global::Prometheus.Labels.Parser, new[]{ "Labels_" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Prometheus.LabelMatcher), global::Prometheus.LabelMatcher.Parser, new[]{ "Type", "Name", "Value" }, null, new[]{ typeof(global::Prometheus.LabelMatcher.Types.Type) }, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Prometheus.ReadHints), global::Prometheus.ReadHints.Parser, new[]{ "StepMs", "Func", "StartMs", "EndMs" }, null, null, null)
+          new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
+            new pbr::GeneratedClrTypeInfo(typeof(global::Prometheus.Sample), global::Prometheus.Sample.Parser, new[]{ "Value", "Timestamp" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Prometheus.TimeSeries), global::Prometheus.TimeSeries.Parser, new[]{ "Labels", "Samples" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Prometheus.Label), global::Prometheus.Label.Parser, new[]{ "Name", "Value" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Prometheus.Labels), global::Prometheus.Labels.Parser, new[]{ "Labels_" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Prometheus.LabelMatcher), global::Prometheus.LabelMatcher.Parser, new[]{ "Type", "Name", "Value" }, null, new[]{ typeof(global::Prometheus.LabelMatcher.Types.Type) }, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Prometheus.ReadHints), global::Prometheus.ReadHints.Parser, new[]{ "StepMs", "Func", "StartMs", "EndMs", "Grouping", "By", "RangeMs" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Prometheus.Chunk), global::Prometheus.Chunk.Parser, new[]{ "MinTimeMs", "MaxTimeMs", "Type", "Data" }, null, new[]{ typeof(global::Prometheus.Chunk.Types.Encoding) }, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Prometheus.ChunkedSeries), global::Prometheus.ChunkedSeries.Parser, new[]{ "Labels", "Chunks" }, null, null, null, null)
           }));
     }
     #endregion
@@ -208,6 +216,9 @@ namespace Prometheus {
 
   }
 
+  /// <summary>
+  /// TimeSeries represents samples and labels for a single time series.
+  /// </summary>
   public sealed partial class TimeSeries : pb::IMessage<TimeSeries> {
     private static readonly pb::MessageParser<TimeSeries> _parser = new pb::MessageParser<TimeSeries>(() => new TimeSeries());
     private pb::UnknownFieldSet _unknownFields;
@@ -668,7 +679,7 @@ namespace Prometheus {
 
     /// <summary>Field number for the "type" field.</summary>
     public const int TypeFieldNumber = 1;
-    private global::Prometheus.LabelMatcher.Types.Type type_ = 0;
+    private global::Prometheus.LabelMatcher.Types.Type type_ = global::Prometheus.LabelMatcher.Types.Type.Eq;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Prometheus.LabelMatcher.Types.Type Type {
       get { return type_; }
@@ -721,7 +732,7 @@ namespace Prometheus {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override int GetHashCode() {
       int hash = 1;
-      if (Type != 0) hash ^= Type.GetHashCode();
+      if (Type != global::Prometheus.LabelMatcher.Types.Type.Eq) hash ^= Type.GetHashCode();
       if (Name.Length != 0) hash ^= Name.GetHashCode();
       if (Value.Length != 0) hash ^= Value.GetHashCode();
       if (_unknownFields != null) {
@@ -737,7 +748,7 @@ namespace Prometheus {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
-      if (Type != 0) {
+      if (Type != global::Prometheus.LabelMatcher.Types.Type.Eq) {
         output.WriteRawTag(8);
         output.WriteEnum((int) Type);
       }
@@ -757,7 +768,7 @@ namespace Prometheus {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
       int size = 0;
-      if (Type != 0) {
+      if (Type != global::Prometheus.LabelMatcher.Types.Type.Eq) {
         size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) Type);
       }
       if (Name.Length != 0) {
@@ -777,7 +788,7 @@ namespace Prometheus {
       if (other == null) {
         return;
       }
-      if (other.Type != 0) {
+      if (other.Type != global::Prometheus.LabelMatcher.Types.Type.Eq) {
         Type = other.Type;
       }
       if (other.Name.Length != 0) {
@@ -858,6 +869,9 @@ namespace Prometheus {
       func_ = other.func_;
       startMs_ = other.startMs_;
       endMs_ = other.endMs_;
+      grouping_ = other.grouping_.Clone();
+      by_ = other.by_;
+      rangeMs_ = other.rangeMs_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -922,6 +936,47 @@ namespace Prometheus {
       }
     }
 
+    /// <summary>Field number for the "grouping" field.</summary>
+    public const int GroupingFieldNumber = 5;
+    private static readonly pb::FieldCodec<string> _repeated_grouping_codec
+        = pb::FieldCodec.ForString(42);
+    private readonly pbc::RepeatedField<string> grouping_ = new pbc::RepeatedField<string>();
+    /// <summary>
+    /// List of label names used in aggregation.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pbc::RepeatedField<string> Grouping {
+      get { return grouping_; }
+    }
+
+    /// <summary>Field number for the "by" field.</summary>
+    public const int ByFieldNumber = 6;
+    private bool by_;
+    /// <summary>
+    /// Indicate whether it is without or by.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool By {
+      get { return by_; }
+      set {
+        by_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "range_ms" field.</summary>
+    public const int RangeMsFieldNumber = 7;
+    private long rangeMs_;
+    /// <summary>
+    /// Range vector selector range in milliseconds.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public long RangeMs {
+      get { return rangeMs_; }
+      set {
+        rangeMs_ = value;
+      }
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
       return Equals(other as ReadHints);
@@ -939,6 +994,9 @@ namespace Prometheus {
       if (Func != other.Func) return false;
       if (StartMs != other.StartMs) return false;
       if (EndMs != other.EndMs) return false;
+      if(!grouping_.Equals(other.grouping_)) return false;
+      if (By != other.By) return false;
+      if (RangeMs != other.RangeMs) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -949,6 +1007,9 @@ namespace Prometheus {
       if (Func.Length != 0) hash ^= Func.GetHashCode();
       if (StartMs != 0L) hash ^= StartMs.GetHashCode();
       if (EndMs != 0L) hash ^= EndMs.GetHashCode();
+      hash ^= grouping_.GetHashCode();
+      if (By != false) hash ^= By.GetHashCode();
+      if (RangeMs != 0L) hash ^= RangeMs.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -978,6 +1039,15 @@ namespace Prometheus {
         output.WriteRawTag(32);
         output.WriteInt64(EndMs);
       }
+      grouping_.WriteTo(output, _repeated_grouping_codec);
+      if (By != false) {
+        output.WriteRawTag(48);
+        output.WriteBool(By);
+      }
+      if (RangeMs != 0L) {
+        output.WriteRawTag(56);
+        output.WriteInt64(RangeMs);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -997,6 +1067,13 @@ namespace Prometheus {
       }
       if (EndMs != 0L) {
         size += 1 + pb::CodedOutputStream.ComputeInt64Size(EndMs);
+      }
+      size += grouping_.CalculateSize(_repeated_grouping_codec);
+      if (By != false) {
+        size += 1 + 1;
+      }
+      if (RangeMs != 0L) {
+        size += 1 + pb::CodedOutputStream.ComputeInt64Size(RangeMs);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -1020,6 +1097,13 @@ namespace Prometheus {
       }
       if (other.EndMs != 0L) {
         EndMs = other.EndMs;
+      }
+      grouping_.Add(other.grouping_);
+      if (other.By != false) {
+        By = other.By;
+      }
+      if (other.RangeMs != 0L) {
+        RangeMs = other.RangeMs;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
@@ -1046,6 +1130,400 @@ namespace Prometheus {
           }
           case 32: {
             EndMs = input.ReadInt64();
+            break;
+          }
+          case 42: {
+            grouping_.AddEntriesFrom(input, _repeated_grouping_codec);
+            break;
+          }
+          case 48: {
+            By = input.ReadBool();
+            break;
+          }
+          case 56: {
+            RangeMs = input.ReadInt64();
+            break;
+          }
+        }
+      }
+    }
+
+  }
+
+  /// <summary>
+  /// Chunk represents a TSDB chunk.
+  /// Time range [min, max] is inclusive.
+  /// </summary>
+  public sealed partial class Chunk : pb::IMessage<Chunk> {
+    private static readonly pb::MessageParser<Chunk> _parser = new pb::MessageParser<Chunk>(() => new Chunk());
+    private pb::UnknownFieldSet _unknownFields;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<Chunk> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::Prometheus.TypesReflection.Descriptor.MessageTypes[6]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public Chunk() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public Chunk(Chunk other) : this() {
+      minTimeMs_ = other.minTimeMs_;
+      maxTimeMs_ = other.maxTimeMs_;
+      type_ = other.type_;
+      data_ = other.data_;
+      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public Chunk Clone() {
+      return new Chunk(this);
+    }
+
+    /// <summary>Field number for the "min_time_ms" field.</summary>
+    public const int MinTimeMsFieldNumber = 1;
+    private long minTimeMs_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public long MinTimeMs {
+      get { return minTimeMs_; }
+      set {
+        minTimeMs_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "max_time_ms" field.</summary>
+    public const int MaxTimeMsFieldNumber = 2;
+    private long maxTimeMs_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public long MaxTimeMs {
+      get { return maxTimeMs_; }
+      set {
+        maxTimeMs_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "type" field.</summary>
+    public const int TypeFieldNumber = 3;
+    private global::Prometheus.Chunk.Types.Encoding type_ = global::Prometheus.Chunk.Types.Encoding.Unknown;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Prometheus.Chunk.Types.Encoding Type {
+      get { return type_; }
+      set {
+        type_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "data" field.</summary>
+    public const int DataFieldNumber = 4;
+    private pb::ByteString data_ = pb::ByteString.Empty;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pb::ByteString Data {
+      get { return data_; }
+      set {
+        data_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as Chunk);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(Chunk other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (MinTimeMs != other.MinTimeMs) return false;
+      if (MaxTimeMs != other.MaxTimeMs) return false;
+      if (Type != other.Type) return false;
+      if (Data != other.Data) return false;
+      return Equals(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (MinTimeMs != 0L) hash ^= MinTimeMs.GetHashCode();
+      if (MaxTimeMs != 0L) hash ^= MaxTimeMs.GetHashCode();
+      if (Type != global::Prometheus.Chunk.Types.Encoding.Unknown) hash ^= Type.GetHashCode();
+      if (Data.Length != 0) hash ^= Data.GetHashCode();
+      if (_unknownFields != null) {
+        hash ^= _unknownFields.GetHashCode();
+      }
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+      if (MinTimeMs != 0L) {
+        output.WriteRawTag(8);
+        output.WriteInt64(MinTimeMs);
+      }
+      if (MaxTimeMs != 0L) {
+        output.WriteRawTag(16);
+        output.WriteInt64(MaxTimeMs);
+      }
+      if (Type != global::Prometheus.Chunk.Types.Encoding.Unknown) {
+        output.WriteRawTag(24);
+        output.WriteEnum((int) Type);
+      }
+      if (Data.Length != 0) {
+        output.WriteRawTag(34);
+        output.WriteBytes(Data);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(output);
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      if (MinTimeMs != 0L) {
+        size += 1 + pb::CodedOutputStream.ComputeInt64Size(MinTimeMs);
+      }
+      if (MaxTimeMs != 0L) {
+        size += 1 + pb::CodedOutputStream.ComputeInt64Size(MaxTimeMs);
+      }
+      if (Type != global::Prometheus.Chunk.Types.Encoding.Unknown) {
+        size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) Type);
+      }
+      if (Data.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeBytesSize(Data);
+      }
+      if (_unknownFields != null) {
+        size += _unknownFields.CalculateSize();
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(Chunk other) {
+      if (other == null) {
+        return;
+      }
+      if (other.MinTimeMs != 0L) {
+        MinTimeMs = other.MinTimeMs;
+      }
+      if (other.MaxTimeMs != 0L) {
+        MaxTimeMs = other.MaxTimeMs;
+      }
+      if (other.Type != global::Prometheus.Chunk.Types.Encoding.Unknown) {
+        Type = other.Type;
+      }
+      if (other.Data.Length != 0) {
+        Data = other.Data;
+      }
+      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+            break;
+          case 8: {
+            MinTimeMs = input.ReadInt64();
+            break;
+          }
+          case 16: {
+            MaxTimeMs = input.ReadInt64();
+            break;
+          }
+          case 24: {
+            Type = (global::Prometheus.Chunk.Types.Encoding) input.ReadEnum();
+            break;
+          }
+          case 34: {
+            Data = input.ReadBytes();
+            break;
+          }
+        }
+      }
+    }
+
+    #region Nested types
+    /// <summary>Container for nested types declared in the Chunk message type.</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static partial class Types {
+      /// <summary>
+      /// We require this to match chunkenc.Encoding.
+      /// </summary>
+      public enum Encoding {
+        [pbr::OriginalName("UNKNOWN")] Unknown = 0,
+        [pbr::OriginalName("XOR")] Xor = 1,
+      }
+
+    }
+    #endregion
+
+  }
+
+  /// <summary>
+  /// ChunkedSeries represents single, encoded time series.
+  /// </summary>
+  public sealed partial class ChunkedSeries : pb::IMessage<ChunkedSeries> {
+    private static readonly pb::MessageParser<ChunkedSeries> _parser = new pb::MessageParser<ChunkedSeries>(() => new ChunkedSeries());
+    private pb::UnknownFieldSet _unknownFields;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<ChunkedSeries> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::Prometheus.TypesReflection.Descriptor.MessageTypes[7]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public ChunkedSeries() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public ChunkedSeries(ChunkedSeries other) : this() {
+      labels_ = other.labels_.Clone();
+      chunks_ = other.chunks_.Clone();
+      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public ChunkedSeries Clone() {
+      return new ChunkedSeries(this);
+    }
+
+    /// <summary>Field number for the "labels" field.</summary>
+    public const int LabelsFieldNumber = 1;
+    private static readonly pb::FieldCodec<global::Prometheus.Label> _repeated_labels_codec
+        = pb::FieldCodec.ForMessage(10, global::Prometheus.Label.Parser);
+    private readonly pbc::RepeatedField<global::Prometheus.Label> labels_ = new pbc::RepeatedField<global::Prometheus.Label>();
+    /// <summary>
+    /// Labels should be sorted.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pbc::RepeatedField<global::Prometheus.Label> Labels {
+      get { return labels_; }
+    }
+
+    /// <summary>Field number for the "chunks" field.</summary>
+    public const int ChunksFieldNumber = 2;
+    private static readonly pb::FieldCodec<global::Prometheus.Chunk> _repeated_chunks_codec
+        = pb::FieldCodec.ForMessage(18, global::Prometheus.Chunk.Parser);
+    private readonly pbc::RepeatedField<global::Prometheus.Chunk> chunks_ = new pbc::RepeatedField<global::Prometheus.Chunk>();
+    /// <summary>
+    /// Chunks will be in start time order and may overlap.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pbc::RepeatedField<global::Prometheus.Chunk> Chunks {
+      get { return chunks_; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as ChunkedSeries);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(ChunkedSeries other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if(!labels_.Equals(other.labels_)) return false;
+      if(!chunks_.Equals(other.chunks_)) return false;
+      return Equals(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      hash ^= labels_.GetHashCode();
+      hash ^= chunks_.GetHashCode();
+      if (_unknownFields != null) {
+        hash ^= _unknownFields.GetHashCode();
+      }
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+      labels_.WriteTo(output, _repeated_labels_codec);
+      chunks_.WriteTo(output, _repeated_chunks_codec);
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(output);
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      size += labels_.CalculateSize(_repeated_labels_codec);
+      size += chunks_.CalculateSize(_repeated_chunks_codec);
+      if (_unknownFields != null) {
+        size += _unknownFields.CalculateSize();
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(ChunkedSeries other) {
+      if (other == null) {
+        return;
+      }
+      labels_.Add(other.labels_);
+      chunks_.Add(other.chunks_);
+      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+            break;
+          case 10: {
+            labels_.AddEntriesFrom(input, _repeated_labels_codec);
+            break;
+          }
+          case 18: {
+            chunks_.AddEntriesFrom(input, _repeated_chunks_codec);
             break;
           }
         }

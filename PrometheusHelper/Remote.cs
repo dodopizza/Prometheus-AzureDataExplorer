@@ -26,23 +26,29 @@ namespace Prometheus {
           string.Concat(
             "CgxyZW1vdGUucHJvdG8SCnByb21ldGhldXMaC3R5cGVzLnByb3RvGhRnb2dv",
             "cHJvdG8vZ29nby5wcm90byJACgxXcml0ZVJlcXVlc3QSMAoKdGltZXNlcmll",
-            "cxgBIAMoCzIWLnByb21ldGhldXMuVGltZVNlcmllc0IEyN4fACIxCgtSZWFk",
-            "UmVxdWVzdBIiCgdxdWVyaWVzGAEgAygLMhEucHJvbWV0aGV1cy5RdWVyeSI4",
-            "CgxSZWFkUmVzcG9uc2USKAoHcmVzdWx0cxgBIAMoCzIXLnByb21ldGhldXMu",
-            "UXVlcnlSZXN1bHQijwEKBVF1ZXJ5EhoKEnN0YXJ0X3RpbWVzdGFtcF9tcxgB",
-            "IAEoAxIYChBlbmRfdGltZXN0YW1wX21zGAIgASgDEioKCG1hdGNoZXJzGAMg",
-            "AygLMhgucHJvbWV0aGV1cy5MYWJlbE1hdGNoZXISJAoFaGludHMYBCABKAsy",
-            "FS5wcm9tZXRoZXVzLlJlYWRIaW50cyI5CgtRdWVyeVJlc3VsdBIqCgp0aW1l",
-            "c2VyaWVzGAEgAygLMhYucHJvbWV0aGV1cy5UaW1lU2VyaWVzQghaBnByb21w",
-            "YmIGcHJvdG8z"));
+            "cxgBIAMoCzIWLnByb21ldGhldXMuVGltZVNlcmllc0IEyN4fACKuAQoLUmVh",
+            "ZFJlcXVlc3QSIgoHcXVlcmllcxgBIAMoCzIRLnByb21ldGhldXMuUXVlcnkS",
+            "RQoXYWNjZXB0ZWRfcmVzcG9uc2VfdHlwZXMYAiADKA4yJC5wcm9tZXRoZXVz",
+            "LlJlYWRSZXF1ZXN0LlJlc3BvbnNlVHlwZSI0CgxSZXNwb25zZVR5cGUSCwoH",
+            "U0FNUExFUxAAEhcKE1NUUkVBTUVEX1hPUl9DSFVOS1MQASI4CgxSZWFkUmVz",
+            "cG9uc2USKAoHcmVzdWx0cxgBIAMoCzIXLnByb21ldGhldXMuUXVlcnlSZXN1",
+            "bHQijwEKBVF1ZXJ5EhoKEnN0YXJ0X3RpbWVzdGFtcF9tcxgBIAEoAxIYChBl",
+            "bmRfdGltZXN0YW1wX21zGAIgASgDEioKCG1hdGNoZXJzGAMgAygLMhgucHJv",
+            "bWV0aGV1cy5MYWJlbE1hdGNoZXISJAoFaGludHMYBCABKAsyFS5wcm9tZXRo",
+            "ZXVzLlJlYWRIaW50cyI5CgtRdWVyeVJlc3VsdBIqCgp0aW1lc2VyaWVzGAEg",
+            "AygLMhYucHJvbWV0aGV1cy5UaW1lU2VyaWVzIl0KE0NodW5rZWRSZWFkUmVz",
+            "cG9uc2USMQoOY2h1bmtlZF9zZXJpZXMYASADKAsyGS5wcm9tZXRoZXVzLkNo",
+            "dW5rZWRTZXJpZXMSEwoLcXVlcnlfaW5kZXgYAiABKANCCFoGcHJvbXBiYgZw",
+            "cm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Prometheus.TypesReflection.Descriptor, global::Gogoproto.GogoReflection.Descriptor, },
-          new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Prometheus.WriteRequest), global::Prometheus.WriteRequest.Parser, new[]{ "Timeseries" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Prometheus.ReadRequest), global::Prometheus.ReadRequest.Parser, new[]{ "Queries" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Prometheus.ReadResponse), global::Prometheus.ReadResponse.Parser, new[]{ "Results" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Prometheus.Query), global::Prometheus.Query.Parser, new[]{ "StartTimestampMs", "EndTimestampMs", "Matchers", "Hints" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Prometheus.QueryResult), global::Prometheus.QueryResult.Parser, new[]{ "Timeseries" }, null, null, null)
+          new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
+            new pbr::GeneratedClrTypeInfo(typeof(global::Prometheus.WriteRequest), global::Prometheus.WriteRequest.Parser, new[]{ "Timeseries" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Prometheus.ReadRequest), global::Prometheus.ReadRequest.Parser, new[]{ "Queries", "AcceptedResponseTypes" }, null, new[]{ typeof(global::Prometheus.ReadRequest.Types.ResponseType) }, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Prometheus.ReadResponse), global::Prometheus.ReadResponse.Parser, new[]{ "Results" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Prometheus.Query), global::Prometheus.Query.Parser, new[]{ "StartTimestampMs", "EndTimestampMs", "Matchers", "Hints" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Prometheus.QueryResult), global::Prometheus.QueryResult.Parser, new[]{ "Timeseries" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Prometheus.ChunkedReadResponse), global::Prometheus.ChunkedReadResponse.Parser, new[]{ "ChunkedSeries", "QueryIndex" }, null, null, null, null)
           }));
     }
     #endregion
@@ -170,6 +176,9 @@ namespace Prometheus {
 
   }
 
+  /// <summary>
+  /// ReadRequest represents a remote read request.
+  /// </summary>
   public sealed partial class ReadRequest : pb::IMessage<ReadRequest> {
     private static readonly pb::MessageParser<ReadRequest> _parser = new pb::MessageParser<ReadRequest>(() => new ReadRequest());
     private pb::UnknownFieldSet _unknownFields;
@@ -196,6 +205,7 @@ namespace Prometheus {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public ReadRequest(ReadRequest other) : this() {
       queries_ = other.queries_.Clone();
+      acceptedResponseTypes_ = other.acceptedResponseTypes_.Clone();
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -214,6 +224,23 @@ namespace Prometheus {
       get { return queries_; }
     }
 
+    /// <summary>Field number for the "accepted_response_types" field.</summary>
+    public const int AcceptedResponseTypesFieldNumber = 2;
+    private static readonly pb::FieldCodec<global::Prometheus.ReadRequest.Types.ResponseType> _repeated_acceptedResponseTypes_codec
+        = pb::FieldCodec.ForEnum(18, x => (int) x, x => (global::Prometheus.ReadRequest.Types.ResponseType) x);
+    private readonly pbc::RepeatedField<global::Prometheus.ReadRequest.Types.ResponseType> acceptedResponseTypes_ = new pbc::RepeatedField<global::Prometheus.ReadRequest.Types.ResponseType>();
+    /// <summary>
+    /// accepted_response_types allows negotiating the content type of the response.
+    ///
+    /// Response types are taken from the list in the FIFO order. If no response type in `accepted_response_types` is
+    /// implemented by server, error is returned.
+    /// For request that do not contain `accepted_response_types` field the SAMPLES response type will be used.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pbc::RepeatedField<global::Prometheus.ReadRequest.Types.ResponseType> AcceptedResponseTypes {
+      get { return acceptedResponseTypes_; }
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
       return Equals(other as ReadRequest);
@@ -228,6 +255,7 @@ namespace Prometheus {
         return true;
       }
       if(!queries_.Equals(other.queries_)) return false;
+      if(!acceptedResponseTypes_.Equals(other.acceptedResponseTypes_)) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -235,6 +263,7 @@ namespace Prometheus {
     public override int GetHashCode() {
       int hash = 1;
       hash ^= queries_.GetHashCode();
+      hash ^= acceptedResponseTypes_.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -249,6 +278,7 @@ namespace Prometheus {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
       queries_.WriteTo(output, _repeated_queries_codec);
+      acceptedResponseTypes_.WriteTo(output, _repeated_acceptedResponseTypes_codec);
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -258,6 +288,7 @@ namespace Prometheus {
     public int CalculateSize() {
       int size = 0;
       size += queries_.CalculateSize(_repeated_queries_codec);
+      size += acceptedResponseTypes_.CalculateSize(_repeated_acceptedResponseTypes_codec);
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
       }
@@ -270,6 +301,7 @@ namespace Prometheus {
         return;
       }
       queries_.Add(other.queries_);
+      acceptedResponseTypes_.Add(other.acceptedResponseTypes_);
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
@@ -285,12 +317,48 @@ namespace Prometheus {
             queries_.AddEntriesFrom(input, _repeated_queries_codec);
             break;
           }
+          case 18:
+          case 16: {
+            acceptedResponseTypes_.AddEntriesFrom(input, _repeated_acceptedResponseTypes_codec);
+            break;
+          }
         }
       }
     }
 
+    #region Nested types
+    /// <summary>Container for nested types declared in the ReadRequest message type.</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static partial class Types {
+      public enum ResponseType {
+        /// <summary>
+        /// Server will return a single ReadResponse message with matched series that includes list of raw samples.
+        /// It's recommended to use streamed response types instead.
+        ///
+        /// Response headers:
+        /// Content-Type: "application/x-protobuf"
+        /// Content-Encoding: "snappy"
+        /// </summary>
+        [pbr::OriginalName("SAMPLES")] Samples = 0,
+        /// <summary>
+        /// Server will stream a delimited ChunkedReadResponse message that contains XOR encoded chunks for a single series.
+        /// Each message is following varint size and fixed size bigendian uint32 for CRC32 Castagnoli checksum.
+        ///
+        /// Response headers:
+        /// Content-Type: "application/x-streamed-protobuf; proto=prometheus.ChunkedReadResponse"
+        /// Content-Encoding: ""
+        /// </summary>
+        [pbr::OriginalName("STREAMED_XOR_CHUNKS")] StreamedXorChunks = 1,
+      }
+
+    }
+    #endregion
+
   }
 
+  /// <summary>
+  /// ReadResponse is a response when response_type equals SAMPLES.
+  /// </summary>
   public sealed partial class ReadResponse : pb::IMessage<ReadResponse> {
     private static readonly pb::MessageParser<ReadResponse> _parser = new pb::MessageParser<ReadResponse>(() => new ReadResponse());
     private pb::UnknownFieldSet _unknownFields;
@@ -742,6 +810,164 @@ namespace Prometheus {
             break;
           case 10: {
             timeseries_.AddEntriesFrom(input, _repeated_timeseries_codec);
+            break;
+          }
+        }
+      }
+    }
+
+  }
+
+  /// <summary>
+  /// ChunkedReadResponse is a response when response_type equals STREAMED_XOR_CHUNKS.
+  /// We strictly stream full series after series, optionally split by time. This means that a single frame can contain
+  /// partition of the single series, but once a new series is started to be streamed it means that no more chunks will
+  /// be sent for previous one. Series are returned sorted in the same way TSDB block are internally.
+  /// </summary>
+  public sealed partial class ChunkedReadResponse : pb::IMessage<ChunkedReadResponse> {
+    private static readonly pb::MessageParser<ChunkedReadResponse> _parser = new pb::MessageParser<ChunkedReadResponse>(() => new ChunkedReadResponse());
+    private pb::UnknownFieldSet _unknownFields;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<ChunkedReadResponse> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::Prometheus.RemoteReflection.Descriptor.MessageTypes[5]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public ChunkedReadResponse() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public ChunkedReadResponse(ChunkedReadResponse other) : this() {
+      chunkedSeries_ = other.chunkedSeries_.Clone();
+      queryIndex_ = other.queryIndex_;
+      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public ChunkedReadResponse Clone() {
+      return new ChunkedReadResponse(this);
+    }
+
+    /// <summary>Field number for the "chunked_series" field.</summary>
+    public const int ChunkedSeriesFieldNumber = 1;
+    private static readonly pb::FieldCodec<global::Prometheus.ChunkedSeries> _repeated_chunkedSeries_codec
+        = pb::FieldCodec.ForMessage(10, global::Prometheus.ChunkedSeries.Parser);
+    private readonly pbc::RepeatedField<global::Prometheus.ChunkedSeries> chunkedSeries_ = new pbc::RepeatedField<global::Prometheus.ChunkedSeries>();
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pbc::RepeatedField<global::Prometheus.ChunkedSeries> ChunkedSeries {
+      get { return chunkedSeries_; }
+    }
+
+    /// <summary>Field number for the "query_index" field.</summary>
+    public const int QueryIndexFieldNumber = 2;
+    private long queryIndex_;
+    /// <summary>
+    /// query_index represents an index of the query from ReadRequest.queries these chunks relates to.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public long QueryIndex {
+      get { return queryIndex_; }
+      set {
+        queryIndex_ = value;
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as ChunkedReadResponse);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(ChunkedReadResponse other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if(!chunkedSeries_.Equals(other.chunkedSeries_)) return false;
+      if (QueryIndex != other.QueryIndex) return false;
+      return Equals(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      hash ^= chunkedSeries_.GetHashCode();
+      if (QueryIndex != 0L) hash ^= QueryIndex.GetHashCode();
+      if (_unknownFields != null) {
+        hash ^= _unknownFields.GetHashCode();
+      }
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+      chunkedSeries_.WriteTo(output, _repeated_chunkedSeries_codec);
+      if (QueryIndex != 0L) {
+        output.WriteRawTag(16);
+        output.WriteInt64(QueryIndex);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(output);
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      size += chunkedSeries_.CalculateSize(_repeated_chunkedSeries_codec);
+      if (QueryIndex != 0L) {
+        size += 1 + pb::CodedOutputStream.ComputeInt64Size(QueryIndex);
+      }
+      if (_unknownFields != null) {
+        size += _unknownFields.CalculateSize();
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(ChunkedReadResponse other) {
+      if (other == null) {
+        return;
+      }
+      chunkedSeries_.Add(other.chunkedSeries_);
+      if (other.QueryIndex != 0L) {
+        QueryIndex = other.QueryIndex;
+      }
+      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+            break;
+          case 10: {
+            chunkedSeries_.AddEntriesFrom(input, _repeated_chunkedSeries_codec);
+            break;
+          }
+          case 16: {
+            QueryIndex = input.ReadInt64();
             break;
           }
         }
