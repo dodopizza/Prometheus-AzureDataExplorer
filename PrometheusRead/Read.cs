@@ -36,6 +36,8 @@ namespace PrometheusRead
         private static ICslQueryProvider adx;
         private static Boolean _isInitialized = false;
 
+        private static SnappyCompressor compressor = new SnappyCompressor();
+
         [FunctionName("Read")]
         public static async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,
@@ -51,9 +53,36 @@ namespace PrometheusRead
                 log.LogMetric("querycount", readrequest.Queries.Count, new Dictionary<String, object>() { { "type", "count" } });
 
                 ReadResponse response = CreateResponse(readrequest, log);
+
+                log.LogMetric("result", response.Results.Count , new Dictionary<String, object>() { { "type", "count" } });
+                log.LogMetric("timeseriesread", response.Results.Select(_ => _.Timeseries.Count).Sum(__ => __), new Dictionary<String, object>() { { "type", "count" } });
+
+                MemoryStream ms = new MemoryStream();
+                Google.Protobuf.CodedOutputStream output = new Google.Protobuf.CodedOutputStream(ms);
+                response.WriteTo(output);
+
+                output.Flush();
+
+                var resultUncompressed = ms.ToArray();
+
+                if (resultUncompressed.Length > 0)
+                {
+                    //should be at least the size of the uncompressed one
+                    byte[] resultCompressed = new byte[resultUncompressed.Length*2];
+
+                    var compressedSize = compressor.Compress(resultUncompressed, 0, resultUncompressed.Length, resultCompressed);
+
+                    Array.Resize(ref resultCompressed, compressedSize);
+
+                    return new FileContentResult(resultCompressed, "application/x-protobuf");
+                }
+                else
+                {
+                    return new FileContentResult(resultUncompressed, "application/x-protobuf");
+                }
             }
 
-            return new OkObjectResult("Test");
+            return null;
 
         } // - function Read
 
@@ -88,7 +117,7 @@ namespace PrometheusRead
             string MetricaQueryTemplate = @"
                 Metrics
                 | where tolong(Timestamp) between ({0} .. {1}) and ( {2} )
-                | order by Timestamp asc 
+                | order by Timestamp asc
                 | extend timeval = pack( 'Timestamp', Timestamp, 'Value', Value )
                 | summarize Samples=make_list(timeval) by tostring(Labels)
                 | extend timeseries=pack( 'Samples', Samples, 'Labels', parse_json(Labels) )
@@ -102,11 +131,11 @@ namespace PrometheusRead
                     MetricaQueryTemplate,
                     aQuery.StartTimestampMs,
                     aQuery.EndTimestampMs,
-                    String.Join( 
-                        " and ", 
+                    String.Join(
+                        " and ",
                         aQuery.Matchers.Select(
                             item => GenerateValueExpression(item.Name, item.Type, item.Value)
-                        ) 
+                        )
                     )
                 );
 
@@ -114,8 +143,8 @@ namespace PrometheusRead
 
                 tasklist.Add(
                     adx.ExecuteQueryAsync(
-                        databaseName: Environment.GetEnvironmentVariable("kustoDatabase"), 
-                        query: kustosql, 
+                        databaseName: Environment.GetEnvironmentVariable("kustoDatabase"),
+                        query: kustosql,
                         null
                     )
                 );
@@ -147,11 +176,11 @@ namespace PrometheusRead
 
         private static String GenerateValueExpression(string name, LabelMatcher.Types.Type type, string value)
         {
-            var KeyMap = new Dictionary<String, String>(){ 
+            var KeyMap = new Dictionary<String, String>(){
                 { "__name__", "Name" },
                 { "job",      "Job" },
                 { "instance", "Instance" }
-            }; 
+            };
 
             string resultName = KeyMap.ContainsKey(name) ? KeyMap[name] : $"tostring(Labels.{name})";
 
