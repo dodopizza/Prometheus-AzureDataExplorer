@@ -8,6 +8,8 @@
     "appClientSecret": "<the secret for aad app>",
 
     "blobStorageConnectionString": "<prometheus storage name>",
+    "blobStorageContainerName": "<prometheus storage container name>",
+
     "kustoUrl": "<the kust url>",
     "kustoDatabase": "<kusto database name>"
   }

@@ -68,8 +68,8 @@ namespace PrometheusWrite
 
             var storageAccount = CloudStorageAccount.Parse(Environment.GetEnvironmentVariable("blobStorageConnectionString"));
             var client = storageAccount.CreateCloudBlobClient();
-            var container = client.GetContainerReference("prometheus");
-            // await container.CreateIfNotExistsAsync();
+            var container = client.GetContainerReference( Environment.GetEnvironmentVariable("blobStorageContainerName") );
+            await container.CreateIfNotExistsAsync();
 
             //
 
@@ -107,18 +107,6 @@ namespace PrometheusWrite
 
             log.LogInformation("[PrometehusWrite] Done");
             return new OkResult();
-
-            // string name = req.Query["name"];
-
-            // string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            // dynamic data = JsonConvert.DeserializeObject(requestBody);
-            // name = name ?? data?.name;
-
-            // string responseMessage = string.IsNullOrEmpty(name)
-            //     ? "This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response."
-            //     : $"Hello, {name}. This HTTP triggered function executed successfully.";
-
-            // return new OkObjectResult(responseMessage);
         }
 
     }

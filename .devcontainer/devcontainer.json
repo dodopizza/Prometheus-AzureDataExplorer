@@ -29,7 +29,8 @@
 		"kustoUrl": "https://dododevkusto.westeurope.kusto.windows.net",
 		"kustoDatabase": "prometheus",
 
-		"blobStorageConnectionString": "DefaultEndpointsProtocol=https;AccountName=devprometheus;AccountKey=k6MQGvpIQ97TwSEbRm0wbN7/JlrICnJwdfZ/l0MASPE1sCNjbV6Yq1Co8ZLaJ91cYxYuIuYBcmIOUspfWGEInA==;EndpointSuffix=core.windows.net"
+		"blobStorageConnectionString": "DefaultEndpointsProtocol=https;AccountName=devprometheus;AccountKey=k6MQGvpIQ97TwSEbRm0wbN7/JlrICnJwdfZ/l0MASPE1sCNjbV6Yq1Co8ZLaJ91cYxYuIuYBcmIOUspfWGEInA==;EndpointSuffix=core.windows.net",
+		"blobStorageContainerName": "prometheus"
 	}
 
 	// Use 'postCreateCommand' to run commands after the container is created.
