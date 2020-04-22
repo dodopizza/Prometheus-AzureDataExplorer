@@ -1,3 +1,39 @@
+## Ресурсы
+Имя ресурса | Тип | Инфо
+---|---|---
+`cluster`prometehusadx | Storage  Account |
+`cluster`-prometheus-adx | Service Principal | 
+`cluster`-prometheus-adx | Event Hub Namespace
+`cluster`-prometheus-adx | Event Hub
+`cluster`-prometheus-adx | Event Grid Subscription
+`dododevkusto` | Azure Data Explorer Cluster | Относится к **dev/ld**
+`dodologs` | Azure Data Explorer Cluster | Относится к **production**
+
+
+1) Выдать `Contributor` на функцию 
+2) `Viewer` на базу в кусто (на сам ресурс не нужно, достаточно только на базу)
+3) `Event Hub`:
+	1) Создаем Event Hub (Namespace) - `cluster`-prometheus-adx 
+	2) В Event Hub Namespace создаем Event Hub - `cluster`-prometheus-adx 
+4) `Event Grid Subscriptions`
+	1) Создаем Event Subscription `cluster`-prometheus-adx:
+		* Topic type - Storage Accounts
+		* Topic resource - наш `cluster`prometehusadx (Storage  Account)
+		* Filter event type - blob created 
+		* Endpoint details - наш `cluster`-prometheus-adx (Event Hub)
+5) Идем в нужный `Azure Data Explorer Cluster`
+	1) Создаем базу `cluster`-prometheus
+		1) Permissions: в базу добавляем нашего `cluster`-prometheus-adx (Service Principal) с ролью View
+		2) Заходим в Azure Data Explorer и создаем таблицу `Metrics` (см.ниже KQL на создание)
+		2) Data  injestion:
+			* Connection type - Blob storage
+			* Storage Account / Event Grid - наши созданные выше ресурсы
+			* Table - `Metrics`
+			* Data format - CSV
+			* Column Mapping - CsvMapping
+
+
+
 ## Presetup 
 ```
 dotnet restore
