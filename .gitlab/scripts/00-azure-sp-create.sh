@@ -9,7 +9,7 @@ cloud_name=`az account show | jq '.environmentName' --raw-output`
 
 az ad sp create-for-rbac \
     --skip-assignment \
-    --name "prometheus-adx-${cluster_name}" \
+    --name "${cluster_name}-prometheus-adx" \
 | jq \
     --arg subscription_id "${subscription_id}" \
     --arg cloud_name "${cloud_name}" \
