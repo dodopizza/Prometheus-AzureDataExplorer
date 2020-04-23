@@ -47,7 +47,9 @@ dotnet restore
 ## Create table
 ```
 .drop table Metrics ifexists
-.create table Metrics (Timestamp: string, Name: string, Instance: string, Job: string, Labels: dynamic, LabelsProm: dynamic, Value: real)
+
+.create table Metrics (Timestamp: long, Name: string, Instance: string, Job: string, Labels: dynamic, LabelsProm: dynamic, Value: real)
+
 .create-or-alter table Metrics ingestion csv mapping 'CsvMapping' 
 '['
 '   { "column" : "Timestamp", "DataType":"string", "Properties":{"Ordinal":"0"}},'
@@ -64,7 +66,7 @@ dotnet restore
 ## Get metrics example
 ```
 Metrics
-| where tolong(Timestamp) between (1587000000000 .. 1587376860000) and ( Name == "node_disk_io_now" )
+| where Timestamp between (1587000000000 .. 1587376860000) and ( Name == "node_disk_io_now" )
 | order by Timestamp asc
 | extend timeval = pack( "Timestamp", Timestamp, "Value", Value )
 | summarize Samples=make_list(timeval) by tostring(Labels)

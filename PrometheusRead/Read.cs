@@ -5,6 +5,7 @@ using System.Text;
 using System.Data;
 using System.Linq;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 
 using Newtonsoft.Json.Linq;
@@ -116,13 +117,16 @@ namespace PrometheusRead
 
             string MetricaQueryTemplate = @"
                 Metrics
-                | where tolong(Timestamp) between ({0} .. {1}) and ( {2} )
+                | where Timestamp between ({0} .. {1}) and ( {2} )
                 | order by Timestamp asc
                 | extend timeval = pack( 'Timestamp', Timestamp, 'Value', Value )
                 | summarize Samples=make_list(timeval) by tostring(LabelsProm)
                 | extend timeseries=pack( 'Samples', Samples, 'Labels', parse_json(LabelsProm) )
                 | project timeseries
             ";
+
+            Stopwatch timer = new Stopwatch();
+            timer.Start();
 
             foreach (var aQuery in readrequest.Queries)
             {
@@ -151,9 +155,19 @@ namespace PrometheusRead
 
             } // - foreach readrequest.Queries
 
+            log.LogInformation( "[PrometehusRead] [ExecuteQueries] Queries count: " + tasklist.Count() );
             Task.WaitAll(tasklist.ToArray());
+            
+            timer.Stop();
+            log.LogInformation( "[PrometehusRead] [ExecuteQueries] Execution time: " + timer.Elapsed );
+
+            log.LogInformation( "[PrometehusRead] [CreateQueryResult] Start serializing results" );
+            timer.Reset();
 
             result.Results.AddRange(tasklist.Select(aTask => CreateQueryResult(aTask.Result)));
+
+            timer.Stop();
+            log.LogInformation( "[PrometehusRead] [CreateQueryResult] Serializing done. Execution time: " + timer.Elapsed );
 
             return result;
         } // - ReadResponse
@@ -162,11 +176,17 @@ namespace PrometheusRead
         {
             var result = new QueryResult();
 
+            var jsonSerializerSettings = new JsonSerializerSettings
+            {
+                NullValueHandling = NullValueHandling.Ignore,
+                MissingMemberHandling = MissingMemberHandling.Ignore
+            };
+
             while (reader.Read())
             {
                 var timeSeriesObject = (JObject)reader.GetValue(0);
 
-                result.Timeseries.Add(JsonConvert.DeserializeObject<TimeSeries>(timeSeriesObject.ToString()));
+                result.Timeseries.Add(JsonConvert.DeserializeObject<TimeSeries>(timeSeriesObject.ToString(),jsonSerializerSettings));
             }
 
             reader.Close();
