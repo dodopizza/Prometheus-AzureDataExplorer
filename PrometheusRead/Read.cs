@@ -119,8 +119,8 @@ namespace PrometheusRead
                 | where tolong(Timestamp) between ({0} .. {1}) and ( {2} )
                 | order by Timestamp asc
                 | extend timeval = pack( 'Timestamp', Timestamp, 'Value', Value )
-                | summarize Samples=make_list(timeval) by tostring(Labels)
-                | extend timeseries=pack( 'Samples', Samples, 'Labels', parse_json(Labels) )
+                | summarize Samples=make_list(timeval) by tostring(LabelsProm)
+                | extend timeseries=pack( 'Samples', Samples, 'Labels', parse_json(LabelsProm) )
                 | project timeseries
             ";
 
