@@ -117,12 +117,9 @@ namespace PrometheusRead
 
             string MetricaQueryTemplate = @"
                 Metrics
-                | where Timestamp between ({0} .. {1}) and ( {2} )
+                | where Timestamp between ( {0} .. {1} ) and ( {2} )
                 | order by Timestamp asc
-                | extend timeval = pack( 'Timestamp', Timestamp, 'Value', Value )
-                | summarize Samples=make_list(timeval) by tostring(LabelsProm)
-                | extend timeseries=pack( 'Samples', Samples, 'Labels', parse_json(LabelsProm) )
-                | project timeseries
+                | summarize Samples=make_list( pack( 'Timestamp', Timestamp, 'Value', Value ) ) by tostring( Labels )
             ";
 
             Stopwatch timer = new Stopwatch();
@@ -157,14 +154,14 @@ namespace PrometheusRead
 
             log.LogInformation( "[PrometehusRead] [ExecuteQueries] Queries count: " + tasklist.Count() );
             Task.WaitAll(tasklist.ToArray());
-            
+
             timer.Stop();
             log.LogInformation( "[PrometehusRead] [ExecuteQueries] Execution time: " + timer.Elapsed );
 
             log.LogInformation( "[PrometehusRead] [CreateQueryResult] Start serializing results" );
             timer.Reset();
 
-            result.Results.AddRange(tasklist.Select(aTask => CreateQueryResult(aTask.Result)));
+            result.Results.AddRange(tasklist.Select(aTask => CreateQueryResult(aTask.Result, log)));
 
             timer.Stop();
             log.LogInformation( "[PrometehusRead] [CreateQueryResult] Serializing done. Execution time: " + timer.Elapsed );
@@ -172,7 +169,7 @@ namespace PrometheusRead
             return result;
         } // - ReadResponse
 
-        private static QueryResult CreateQueryResult(IDataReader reader)
+        private static QueryResult CreateQueryResult(IDataReader reader, ILogger log)
         {
             var result = new QueryResult();
 
@@ -184,9 +181,26 @@ namespace PrometheusRead
 
             while (reader.Read())
             {
-                var timeSeriesObject = (JObject)reader.GetValue(0);
+                var timeseriesItem = new Prometheus.TimeSeries();
+                var Labels = (string)reader["Labels"];
+                var Samples = (JArray)reader["Samples"];
 
-                result.Timeseries.Add(JsonConvert.DeserializeObject<TimeSeries>(timeSeriesObject.ToString(),jsonSerializerSettings));
+                var samplesRange = JsonConvert.DeserializeObject<IEnumerable<Prometheus.Sample>>( Samples.ToString(), jsonSerializerSettings );
+                timeseriesItem.Samples.AddRange(samplesRange);
+
+                var labelsKV = JsonConvert.DeserializeObject<Dictionary<string,string>>(Labels);
+                var LabelsProm = new List<Prometheus.Label>();
+
+                foreach ( KeyValuePair<string, string> item in labelsKV )
+                {
+                    var label = new Prometheus.Label();
+                    label.Name = item.Key;
+                    label.Value = item.Value;
+
+                    timeseriesItem.Labels.Add(label);
+                }
+
+                result.Timeseries.Add( timeseriesItem );
             }
 
             reader.Close();
