@@ -2,7 +2,7 @@
 Имя ресурса | Тип | Инфо
 ---|---|---
 `cluster`prometehusadx | Storage  Account |
-`cluster`-prometheus-adx | Service Principal | 
+`cluster`-prometheus-adx | Service Principal |
 `cluster`-prometheus-adx | Event Hub Namespace
 `cluster`-prometheus-adx | Event Hub
 `cluster`-prometheus-adx | Event Grid Subscription
@@ -10,16 +10,16 @@
 `dodologs` | Azure Data Explorer Cluster | Относится к **production**
 
 
-1) Выдать `Contributor` на функцию 
+1) Выдать `Contributor` на функцию
 2) `Viewer` на базу в кусто (на сам ресурс не нужно, достаточно только на базу)
 3) `Event Hub`:
-	1) Создаем Event Hub (Namespace) - `cluster`-prometheus-adx 
-	2) В Event Hub Namespace создаем Event Hub - `cluster`-prometheus-adx 
+	1) Создаем Event Hub (Namespace) - `cluster`-prometheus-adx
+	2) В Event Hub Namespace создаем Event Hub - `cluster`-prometheus-adx
 4) `Event Grid Subscriptions`
 	1) Создаем Event Subscription `cluster`-prometheus-adx:
 		* Topic type - Storage Accounts
 		* Topic resource - наш `cluster`prometehusadx (Storage  Account)
-		* Filter event type - blob created 
+		* Filter event type - blob created
 		* Endpoint details - наш `cluster`-prometheus-adx (Event Hub)
 5) Идем в нужный `Azure Data Explorer Cluster`
 	1) Создаем базу `cluster`-prometheus
@@ -34,7 +34,7 @@
 
 
 
-## Presetup 
+## Presetup
 ```
 dotnet restore
 ```
@@ -48,17 +48,16 @@ dotnet restore
 ```
 .drop table Metrics ifexists
 
-.create table Metrics (Timestamp: long, Name: string, Instance: string, Job: string, Labels: dynamic, LabelsProm: dynamic, Value: real)
+.create table Metrics (Timestamp: long, Name: string, Instance: string, Job: string, Labels: dynamic, Value: real)
 
-.create-or-alter table Metrics ingestion csv mapping 'CsvMapping' 
+.create-or-alter table Metrics ingestion csv mapping 'CsvMapping'
 '['
-'   { "column" : "Timestamp", "DataType":"string", "Properties":{"Ordinal":"0"}},'
+'   { "column" : "Timestamp", "DataType":"long", "Properties":{"Ordinal":"0"}},'
 '   { "column" : "Name", "DataType":"string", "Properties":{"Ordinal":"1"}},'
 '   { "column" : "Instance", "DataType":"string", "Properties":{"Ordinal":"2"}},'
 '   { "column" : "Job", "DataType":"string", "Properties":{"Ordinal":"3"}},'
 '   { "column" : "Labels", "DataType":"dynamic", "Properties":{"Ordinal":"4"}},'
-'   { "column" : "LabelsProm", "DataType":"dynamic", "Properties":{"Ordinal":"5"}},'
-'   { "column" : "Value", "DataType":"real", "Properties":{"Ordinal":"6"}},'
+'   { "column" : "Value", "DataType":"real", "Properties":{"Ordinal":"5"}},'
 ']'
 ```
 
