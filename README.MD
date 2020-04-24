@@ -48,16 +48,17 @@ dotnet restore
 ```
 .drop table Metrics ifexists
 
-.create table Metrics (Timestamp: long, Name: string, Instance: string, Job: string, Labels: dynamic, Value: real)
+.create table Metrics (Datetime: datetime, Timestamp: long, Name: string, Instance: string, Job: string, Labels: dynamic, Value: real)
 
 .create-or-alter table Metrics ingestion csv mapping 'CsvMapping'
 '['
-'   { "column" : "Timestamp", "DataType":"long", "Properties":{"Ordinal":"0"}},'
-'   { "column" : "Name", "DataType":"string", "Properties":{"Ordinal":"1"}},'
-'   { "column" : "Instance", "DataType":"string", "Properties":{"Ordinal":"2"}},'
-'   { "column" : "Job", "DataType":"string", "Properties":{"Ordinal":"3"}},'
-'   { "column" : "Labels", "DataType":"dynamic", "Properties":{"Ordinal":"4"}},'
-'   { "column" : "Value", "DataType":"real", "Properties":{"Ordinal":"5"}},'
+'   { "column" : "Datetime", "DataType":"datetime", "Properties":{"Ordinal":"0"}},'
+'   { "column" : "Timestamp", "DataType":"long", "Properties":{"Ordinal":"1"}},'
+'   { "column" : "Name", "DataType":"string", "Properties":{"Ordinal":"2"}},'
+'   { "column" : "Instance", "DataType":"string", "Properties":{"Ordinal":"3"}},'
+'   { "column" : "Job", "DataType":"string", "Properties":{"Ordinal":"4"}},'
+'   { "column" : "Labels", "DataType":"dynamic", "Properties":{"Ordinal":"5"}},'
+'   { "column" : "Value", "DataType":"real", "Properties":{"Ordinal":"6"}},'
 ']'
 ```
 

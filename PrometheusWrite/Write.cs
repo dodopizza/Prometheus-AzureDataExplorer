@@ -35,16 +35,26 @@ namespace PrometheusWrite
     public class KustoRow
     {
         [Index(0)]
-        public long Timestamp { get; set; }
+        public string Datetime
+        { 
+            get {
+                // Representing unixtime milliseconds as ISO 8601 string datetime
+                // https://docs.microsoft.com/en-us/azure/data-explorer/kusto/query/scalar-data-types/datetime
+                return DateTimeOffset.FromUnixTimeMilliseconds( this.Timestamp ).UtcDateTime.ToString("yyyy-MM-ddTHH:mm:ss.fff");
+            } 
+            set { }
+        }
         [Index(1)]
-        public string Name { get; set; }
+        public long Timestamp { get; set; }
         [Index(2)]
-        public string Instance { get; set; }
+        public string Name { get; set; }
         [Index(3)]
-        public string Job { get; set; }
+        public string Instance { get; set; }
         [Index(4)]
-        public string Labels { get; set; }
+        public string Job { get; set; }
         [Index(5)]
+        public string Labels { get; set; }
+        [Index(6)]
         public double Value { get; set; }
     }
 

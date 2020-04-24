@@ -117,8 +117,8 @@ namespace PrometheusRead
 
             string MetricaQueryTemplate = @"
                 Metrics
-                | where Timestamp between ( {0} .. {1} ) and ( {2} )
-                | order by Timestamp asc
+                | where Datetime between ( unixtime_milliseconds_todatetime({0}) .. unixtime_milliseconds_todatetime({1}) ) and ( {2} )
+                | order by Datetime asc
                 | summarize Samples=make_list( pack( 'Timestamp', Timestamp, 'Value', Value ) ) by tostring( Labels )
             ";
 
