@@ -154,7 +154,7 @@ namespace PrometheusRead
 
             log.LogInformation( "[PrometehusRead] [ExecuteQueries] Queries count: " + tasklist.Count() );
             Task.WaitAll(tasklist.ToArray());
-            
+
             timer.Stop();
             log.LogInformation( "[PrometehusRead] [ExecuteQueries] Execution time: " + timer.Elapsed );
 
@@ -185,9 +185,8 @@ namespace PrometheusRead
                 var Labels = (string)reader["Labels"];
                 var Samples = (JArray)reader["Samples"];
 
-                timeseriesItem.Samples.AddRange(
-                    JsonConvert.DeserializeObject<IEnumerable<Prometheus.Sample>>( Samples.ToString(), jsonSerializerSettings )
-                );
+                var samplesRange = JsonConvert.DeserializeObject<IEnumerable<Prometheus.Sample>>( Samples.ToString(), jsonSerializerSettings );
+                timeseriesItem.Samples.AddRange(samplesRange);
 
                 var labelsKV = JsonConvert.DeserializeObject<Dictionary<string,string>>(Labels);
                 var LabelsProm = new List<Prometheus.Label>();
