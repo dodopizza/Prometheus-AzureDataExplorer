@@ -119,7 +119,7 @@ namespace PrometheusRead
                 Metrics
                 | where Datetime between ( unixtime_milliseconds_todatetime({0}) .. unixtime_milliseconds_todatetime({1}) ) and ( {2} )
                 | order by Datetime asc
-                | summarize Labels=any(Labels), Samples=make_list( pack( 'Timestamp', Timestamp, 'Value', Value ) ) by LabelsHash
+                | summarize Labels=tostring(any(Labels)), Samples=make_list( pack( 'Timestamp', Timestamp, 'Value', Value ) ) by LabelsHash
             ";
 
             Stopwatch timer = new Stopwatch();
