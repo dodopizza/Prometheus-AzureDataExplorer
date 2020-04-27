@@ -48,7 +48,7 @@ dotnet restore
 ```
 .drop table Metrics ifexists
 
-.create table Metrics (Datetime: datetime, Timestamp: long, Name: string, Instance: string, Job: string, Labels: dynamic, Value: real)
+.create table Metrics (Datetime: datetime, Timestamp: long, Name: string, Instance: string, Job: string, Labels: dynamic, LabelsHash: string, Value: real)
 
 .create-or-alter table Metrics ingestion csv mapping 'CsvMapping'
 '['
@@ -58,7 +58,8 @@ dotnet restore
 '   { "column" : "Instance", "DataType":"string", "Properties":{"Ordinal":"3"}},'
 '   { "column" : "Job", "DataType":"string", "Properties":{"Ordinal":"4"}},'
 '   { "column" : "Labels", "DataType":"dynamic", "Properties":{"Ordinal":"5"}},'
-'   { "column" : "Value", "DataType":"real", "Properties":{"Ordinal":"6"}},'
+'   { "column" : "LabelsHash", "DataType":"string", "Properties":{"Ordinal":"6"}},'
+'   { "column" : "Value", "DataType":"real", "Properties":{"Ordinal":"7"}},'
 ']'
 ```
 

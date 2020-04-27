@@ -8,6 +8,9 @@ using System.Globalization;
 
 using System.Threading.Tasks;
 
+using System.Security.Cryptography;
+using System.Text;
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 
@@ -36,12 +39,12 @@ namespace PrometheusWrite
     {
         [Index(0)]
         public string Datetime
-        { 
+        {
             get {
                 // Representing unixtime milliseconds as ISO 8601 string datetime
                 // https://docs.microsoft.com/en-us/azure/data-explorer/kusto/query/scalar-data-types/datetime
                 return DateTimeOffset.FromUnixTimeMilliseconds( this.Timestamp ).UtcDateTime.ToString("yyyy-MM-ddTHH:mm:ss.fff");
-            } 
+            }
             set { }
         }
         [Index(1)]
@@ -55,6 +58,8 @@ namespace PrometheusWrite
         [Index(5)]
         public string Labels { get; set; }
         [Index(6)]
+        public string LabelsHash { get; set; }
+        [Index(7)]
         public double Value { get; set; }
     }
 
@@ -145,8 +150,22 @@ namespace PrometheusWrite
             }
 
             kustoRow.Labels = JsonConvert.SerializeObject(labelsDict);
+            kustoRow.LabelsHash = GetStringSha256Hash(kustoRow.Labels);
 
             return kustoRow;
+        }
+
+        public static string GetStringSha256Hash(string text)
+        {
+            if (String.IsNullOrEmpty(text))
+                return String.Empty;
+
+            using (var sha = new System.Security.Cryptography.SHA256Managed())
+            {
+                byte[] textData = System.Text.Encoding.UTF8.GetBytes(text);
+                byte[] hash = sha.ComputeHash(textData);
+                return BitConverter.ToString(hash).Replace("-", String.Empty);
+            }
         }
     }
 
