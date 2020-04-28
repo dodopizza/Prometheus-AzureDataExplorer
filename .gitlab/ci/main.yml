@@ -42,3 +42,13 @@ deploy/function/ld:
     name: ld/function
   variables:
     FUNCTIONAPP_NAME: ld-prometheus-adx
+
+deploy/function/eu2:
+  extends:
+    - .only/refs/master
+    - .common/runners/dev
+    - .deploy/function
+  environment:
+    name: eu2/function
+  variables:
+    FUNCTIONAPP_NAME: eu2-prometheus-adx
