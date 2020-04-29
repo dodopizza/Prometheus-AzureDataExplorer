@@ -46,9 +46,19 @@ deploy/function/ld:
 deploy/function/eu2:
   extends:
     - .only/refs/master
-    - .common/runners/dev
+    - .common/runners/eu2
     - .deploy/function
   environment:
     name: eu2/function
   variables:
     FUNCTIONAPP_NAME: eu2-prometheus-adx
+
+deploy/function/we:
+  extends:
+    - .only/refs/master
+    - .common/runners/we
+    - .deploy/function
+  environment:
+    name: we/function
+  variables:
+    FUNCTIONAPP_NAME: we-prometheus-adx
