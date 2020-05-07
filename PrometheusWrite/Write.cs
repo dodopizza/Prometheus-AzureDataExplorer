@@ -58,7 +58,7 @@ namespace PrometheusWrite
         [Index(5)]
         public string Labels { get; set; }
         [Index(6)]
-        public string LabelsHash { get; set; }
+        public long LabelsHash { get; set; }
         [Index(7)]
         public double Value { get; set; }
     }
@@ -150,23 +150,22 @@ namespace PrometheusWrite
             }
 
             kustoRow.Labels = JsonConvert.SerializeObject(labelsDict);
-            kustoRow.LabelsHash = GetStringSha256Hash(kustoRow.Labels);
+            kustoRow.LabelsHash = SDBMHash(kustoRow.Labels);
 
             return kustoRow;
         }
 
-        public static string GetStringSha256Hash(string text)
-        {
-            if (String.IsNullOrEmpty(text))
-                return String.Empty;
-
-            using (var sha = new System.Security.Cryptography.SHA256Managed())
+        static public long SDBMHash(String str)
             {
-                byte[] textData = System.Text.Encoding.UTF8.GetBytes(text);
-                byte[] hash = sha.ComputeHash(textData);
-                return BitConverter.ToString(hash).Replace("-", String.Empty);
+                long hash = 0;
+
+                for (Int32 i = 0; i < str.Length; i++)
+                {
+                    hash = str[i] + (hash << 6) + (hash << 16) - hash;
+                }
+
+                return hash;
             }
-        }
     }
 
 }
