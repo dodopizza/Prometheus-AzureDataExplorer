@@ -16,7 +16,7 @@ namespace PrometheusDownSampling
         {
             log.LogInformation($"C# Timer trigger function executed at: {DateTime.Now}");
 
-            var execTime = DateTime.Now.ToString("MM/dd/yyyy HH:mm:ss");
+            var execTime = DateTime.Now.AddDays(-1).ToString("MM/dd/yyyy HH:00:00");
 
             KustoConnectionStringBuilder connection =
                 new KustoConnectionStringBuilder(Environment.GetEnvironmentVariable("kustoUrl", EnvironmentVariableTarget.Process)).WithAadApplicationKeyAuthentication(
