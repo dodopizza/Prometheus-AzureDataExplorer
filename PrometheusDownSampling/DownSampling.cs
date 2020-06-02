@@ -28,18 +28,28 @@ namespace PrometheusDownSampling
 
             string query = @"
                 .set-or-append MetricsNew with (ingestIfNotExists = '[""{0}""]', tags='[""ingest-by:{0}""]') <|
-                let PeriodStart = bin(now(-2d), 1h) - 3h;
-                let PeriodEnd = bin(now(-2d), 1h);
-                let Period = 1m;
+                let PeriodStart = bin(now(-1d), 1h) - 3h;
+                let PeriodEnd = bin(now(-1d), 1h);
+                let Step = 1m;
                 Metrics
-                | where Datetime between ( PeriodStart .. PeriodEnd ) and isnan(Value) == false
+                | where Datetime between ( PeriodStart .. PeriodEnd )
+                | order by Datetime asc
                 | summarize
                     Timestamp=bin(min(Timestamp), 60000), // start of minute
                     Name=any(Name),
                     Instance=any(Instance),
                     Job=any(Job),
                     Labels=any(Labels),
-                    Value=avg(Value) by bin(Datetime, Period), LabelsHash
+                    Value=avg(Value) by bin(Datetime, Step), LabelsHash
+                | summarize
+                    Datetime=min(Datetime),
+                    StartTimestamp=min(Timestamp),
+                    EndTimestamp=max(Timestamp),
+                    Name=any(Name),
+                    Instance=any(Instance),
+                    Job=any(Job),
+                    Labels=any(Labels),
+                    Samples=make_list( pack( 'Timestamp', Timestamp, 'Value', Value ) ) by LabelsHash
             ";
 
             var kustosql = string.Format(query, execTime);

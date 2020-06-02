@@ -116,10 +116,10 @@ namespace PrometheusRead
             List<Task<IDataReader>> tasklist = new List<Task<IDataReader>>();
 
             string MetricaQueryTemplate = @"
-                Metrics
-                | where Datetime between ( unixtime_milliseconds_todatetime({0}) .. unixtime_milliseconds_todatetime({1}) ) and ( {2} )
-                | order by Datetime asc
-                | summarize Labels=tostring(any(Labels)), Samples=make_list( pack( 'Timestamp', Timestamp, 'Value', Value ) ) by LabelsHash
+                MetricsNew
+                | where ((EndTimestamp > {0})) and ((StartTimestamp < {1})) and ( {2} )
+                | order by StartTimestamp asc
+                | summarize Labels=tostring(any(Labels)), Samples=make_list( Samples ) by LabelsHash
             ";
 
             Stopwatch timer = new Stopwatch();
