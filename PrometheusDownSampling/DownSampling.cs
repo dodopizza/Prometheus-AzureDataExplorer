@@ -12,7 +12,7 @@ namespace PrometheusDownSampling
     {
         private static ICslAdminProvider adx;
         [FunctionName("DownSampling")]
-        public static void Run([TimerTrigger("0 30 */3 * * *")]TimerInfo myTimer, ILogger log)
+        public static void Run([TimerTrigger("0 30 * * * *")]TimerInfo myTimer, ILogger log)
         {
             log.LogInformation($"C# Timer trigger function executed at: {DateTime.Now}");
 
@@ -28,7 +28,7 @@ namespace PrometheusDownSampling
 
             string query = @"
                 .set-or-append Metrics with (ingestIfNotExists = '[""{0}""]', tags='[""ingest-by:{0}""]') <|
-                let PeriodStart = bin(now(-1d), 1h) - 3h;
+                let PeriodStart = bin(now(-1d), 1h) - 1h;
                 let PeriodEnd = bin(now(-1d), 1h);
                 let Step = 1m;
                 RawData
