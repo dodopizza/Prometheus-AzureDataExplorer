@@ -117,9 +117,13 @@ namespace PrometheusRead
 
             string MetricaQueryTemplate = @"
                 MetricsNew
-                | where ((EndTimestamp > {0})) and ((StartTimestamp < {1})) and ( {2} )
-                | order by StartTimestamp asc
+                | where (EndDatetime >= unixtime_milliseconds_todatetime({0})) and (StartDatetime <= unixtime_milliseconds_todatetime({1})) and ( {2} )
                 | summarize Labels=tostring(any(Labels)), Samples=make_list( Samples ) by LabelsHash
+                | mv-apply Samples = Samples on
+                (
+                    order by tolong(Samples['Timestamp']) asc
+                    | summarize Samples=make_list(pack('Timestamp', Samples['Timestamp'], 'Value', Samples['Value']))
+                )
             ";
 
             Stopwatch timer = new Stopwatch();

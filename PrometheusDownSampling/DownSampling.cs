@@ -27,13 +27,12 @@ namespace PrometheusDownSampling
             adx = KustoClientFactory.CreateCslAdminProvider(connection);
 
             string query = @"
-                .set-or-append MetricsNew with (ingestIfNotExists = '[""{0}""]', tags='[""ingest-by:{0}""]') <|
+                .set-or-append Metrics with (ingestIfNotExists = '[""{0}""]', tags='[""ingest-by:{0}""]') <|
                 let PeriodStart = bin(now(-1d), 1h) - 3h;
                 let PeriodEnd = bin(now(-1d), 1h);
                 let Step = 1m;
-                Metrics
+                RawData
                 | where Datetime between ( PeriodStart .. PeriodEnd )
-                | order by Datetime asc
                 | summarize
                     Timestamp=bin(min(Timestamp), 60000), // start of minute
                     Name=any(Name),
@@ -42,9 +41,8 @@ namespace PrometheusDownSampling
                     Labels=any(Labels),
                     Value=avg(Value) by bin(Datetime, Step), LabelsHash
                 | summarize
-                    Datetime=min(Datetime),
-                    StartTimestamp=min(Timestamp),
-                    EndTimestamp=max(Timestamp),
+                    StartDatetime=min(Datetime),
+                    EndDatetime=max(Datetime),
                     Name=any(Name),
                     Instance=any(Instance),
                     Job=any(Job),
