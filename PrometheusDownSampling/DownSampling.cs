@@ -10,7 +10,6 @@ namespace PrometheusDownSampling
 {
     public static class DownSampling
     {
-        private static ICslAdminProvider adx;
         [FunctionName("DownSampling")]
         public static void Run([TimerTrigger("0 30 * * * *")]TimerInfo myTimer, ILogger log)
         {
@@ -24,7 +23,7 @@ namespace PrometheusDownSampling
                         applicationKey: Environment.GetEnvironmentVariable("appClientSecret", EnvironmentVariableTarget.Process),
                         authority: Environment.GetEnvironmentVariable("tenantId", EnvironmentVariableTarget.Process));
 
-            adx = KustoClientFactory.CreateCslAdminProvider(connection);
+            var adx = KustoClientFactory.CreateCslAdminProvider(connection);
 
             string query = @"
                 .set-or-append Metrics with (ingestIfNotExists = '[""{0}""]', tags='[""ingest-by:{0}""]') <|
@@ -53,8 +52,6 @@ namespace PrometheusDownSampling
             var kustosql = string.Format(query, execTime);
 
             log.LogInformation($"KQL: {kustosql}");
-
-            Console.WriteLine("Executing query to Kusto...");
 
             adx.ExecuteControlCommand(
                 databaseName: Environment.GetEnvironmentVariable("kustoDatabase"),
