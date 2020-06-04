@@ -116,7 +116,7 @@ namespace PrometheusRead
             List<Task<IDataReader>> tasklist = new List<Task<IDataReader>>();
 
             string MetricaQueryTemplate = @"
-                MetricsNew
+                Metrics
                 | where (EndDatetime >= unixtime_milliseconds_todatetime({0})) and (StartDatetime <= unixtime_milliseconds_todatetime({1})) and ( {2} )
                 | summarize Labels=tostring(any(Labels)), Samples=make_list( Samples ) by LabelsHash
                 | mv-apply Samples = Samples on
