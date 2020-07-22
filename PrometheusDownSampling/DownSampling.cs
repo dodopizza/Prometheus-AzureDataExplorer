@@ -11,11 +11,15 @@ namespace PrometheusDownSampling
     public static class DownSampling
     {
         [FunctionName("DownSampling")]
-        public static void Run([TimerTrigger("0 30 * * * *")]TimerInfo myTimer, ILogger log)
+        public static void Run([TimerTrigger("0 15,45 * * * *")]TimerInfo myTimer, ILogger log)
         {
             log.LogInformation($"C# Timer trigger function executed at: {DateTime.Now}");
 
-            var execTime = DateTime.Now.AddDays(-1).ToString("MM/dd/yyyy HH:00:00");
+            var tagMinute = DateTime.Now.Minute / 30 * 30;
+
+            var timeTagTemplate = @"MM/dd/yyyy HH:{0}:00";
+
+            var execTime = DateTime.Now.AddDays(-1).ToString(string.Format(timeTagTemplate, tagMinute));
 
             KustoConnectionStringBuilder connection =
                 new KustoConnectionStringBuilder(Environment.GetEnvironmentVariable("kustoUrl", EnvironmentVariableTarget.Process)).WithAadApplicationKeyAuthentication(
@@ -27,8 +31,8 @@ namespace PrometheusDownSampling
 
             string query = @"
                 .set-or-append Metrics with (ingestIfNotExists = '[""{0}""]', tags='[""ingest-by:{0}""]') <|
-                let PeriodStart = bin(now(-1d), 1h) - 1h;
-                let PeriodEnd = bin(now(-1d), 1h);
+                let PeriodStart = bin(now(-1d), 30m) - 30m;
+                let PeriodEnd = bin(now(-1d), 30m);
                 let Step = 1m;
                 RawData
                 | where Datetime between ( PeriodStart .. PeriodEnd )
