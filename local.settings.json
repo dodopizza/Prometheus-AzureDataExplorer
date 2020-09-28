@@ -3,7 +3,7 @@
   "Values": {
     "FUNCTIONS_WORKER_RUNTIME": "dotnet",
 
-    "AzureWebJobsStorage": "DefaultEndpointsProtocol=https;AccountName=wedevstorage;AccountKey=BAP64hEYurMVHZoZaeemIzCuSHAej5NEGFQrgx3lOFzJ6Xs3SM2chRLG3cOCXdArBdu91pJYcAEbkY138P96LQ==;EndpointSuffix=core.windows.net",
+    "AzureWebJobsStorage": "<blobstorage connection string>",
 
     "tenantId": "<the tenant id>",
     "appClientId": "<the client id of the aad app>",
