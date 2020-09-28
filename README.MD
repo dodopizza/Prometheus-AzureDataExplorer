@@ -11,7 +11,7 @@
 
 
 1) Выдать `Contributor` на функцию
-2) `Viewer` на базу в кусто (на сам ресурс не нужно, достаточно только на базу)
+2) `Admin` на базу в кусто (на сам ресурс не нужно, достаточно только на базу)
 3) `Event Hub`:
 	1) Создаем Event Hub (Namespace) - `cluster`-prometheus-adx
 	2) В Event Hub Namespace создаем Event Hub - `cluster`-prometheus-adx
@@ -24,7 +24,7 @@
 5) Идем в нужный `Azure Data Explorer Cluster`
 	1) Создаем базу `cluster`-prometheus
 		1) Permissions: в базу добавляем нашего `cluster`-prometheus-adx (Service Principal) с ролью View
-		2) Заходим в Azure Data Explorer и создаем таблицу `Metrics` (см.ниже KQL на создание)
+		2) Заходим в Azure Data Explorer и создаем таблицы `RawData`, `Metrics` (см.ниже KQL на создание)
 		2) Data  injestion:
 			* Connection type - Blob storage
 			* Storage Account / Event Grid - наши созданные выше ресурсы
@@ -48,9 +48,9 @@ dotnet restore
 ```
 .drop table Metrics ifexists
 
-.create table Metrics (Datetime: datetime, Timestamp: long, Name: string, Instance: string, Job: string, Labels: dynamic, LabelsHash: long, Value: real)
+.create table RawData (Datetime: datetime, Timestamp: long, Name: string, Instance: string, Job: string, Labels: dynamic, LabelsHash: long, Value: real)
 
-.create-or-alter table Metrics ingestion csv mapping 'CsvMapping'
+.create-or-alter table RawData ingestion csv mapping 'CsvMapping'
 '['
 '   { "column" : "Datetime", "DataType":"datetime", "Properties":{"Ordinal":"0"}},'
 '   { "column" : "Timestamp", "DataType":"long", "Properties":{"Ordinal":"1"}},'
@@ -61,18 +61,23 @@ dotnet restore
 '   { "column" : "LabelsHash", "DataType":"long", "Properties":{"Ordinal":"6"}},'
 '   { "column" : "Value", "DataType":"real", "Properties":{"Ordinal":"7"}},'
 ']'
+
+.alter-merge table RawData policy retention softdelete = 4d recoverability = disabled
+
+.create table Metrics (LabelsHash: long, StartDatetime: datetime, EndDatetime: datetime, Name: string, Instance: string, Job: string, Labels: dynamic, Samples: dynamic)
 ```
 
 
 ## Get metrics example
 ```
 Metrics
-| where Timestamp between (1587000000000 .. 1587376860000) and ( Name == "node_disk_io_now" )
-| order by Timestamp asc
-| extend timeval = pack( "Timestamp", Timestamp, "Value", Value )
-| summarize Samples=make_list(timeval) by tostring(Labels)
-| extend timeseries=pack( "Samples", Samples, "Labels", parse_json(Labels) )
-| project timeseries
+| where (EndDatetime >= unixtime_milliseconds_todatetime(1591084670098)) and (StartDatetime <= unixtime_milliseconds_todatetime(1591092170098)) and ( ( Name == 'mysql_global_status_queries' ) )
+| summarize Labels=tostring(any(Labels)), Samples=make_list( Samples ) by LabelsHash
+| mv-apply Samples = Samples on
+(
+    order by tolong(Samples['Timestamp']) asc
+    | summarize Samples=make_list(pack('Timestamp', Samples['Timestamp'], 'Value', Samples['Value']))
+)
 ```
 
 ## Prometheus read/write format
