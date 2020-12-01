@@ -19,8 +19,6 @@ jobs:
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
 
-    - name: 'Resolve Project Dependencies Using Dotnet'
+    - name: 'Resolve dependencies and build project'
       shell: pwsh
-      run: |
-        dotnet restore
-        dotnet build --configuration Release --output ./output
+      run: dotnet build --configuration Release --output ./output
