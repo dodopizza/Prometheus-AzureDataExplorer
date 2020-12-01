@@ -1,0 +1,26 @@
+name: Build and test
+
+on:
+  push:
+    branches:
+      - "*"
+      - "!master"
+
+jobs:
+  build:
+    name: Build and test
+    runs-on: ubuntu-18.04
+    steps:
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Build runtime image
+        uses: docker/build-push-action@v1
+        with:
+          push: false
+          context: .devcontainer
+          file: ./Dockerfile
+          repository: afruntime
+          tags: latest
+
