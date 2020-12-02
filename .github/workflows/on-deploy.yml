@@ -25,8 +25,10 @@ jobs:
 
     - name: 'Publish project to ld'
       env:
-        SP_NAME: SP_ADX_LD
+        SP_NAME: ${{ secrets.SP_LD }}
+        APPLICATION_SETTINGS: ${{ secrets.AS_LD }}
         FUNCTIONAPP_NAME: ld-prometheus-adx
       run: |
         ./.github/scripts/01-az-login.sh ${SP_NAME}
+        echo "${APPLICATION_SETTINGS}" > local.settings.json
         func azure functionapp publish ${FUNCTIONAPP_NAME} --publish-local-settings --overwrite-settings
