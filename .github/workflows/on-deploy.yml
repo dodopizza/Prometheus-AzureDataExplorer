@@ -24,7 +24,7 @@ jobs:
       run: dotnet build --configuration Release --output ./output
 
     - name: 'Install azure-functions-core-tools-3'
-      run: apt-get -y install azure-functions-core-tools-3
+      run: sudo apt-get -y install azure-functions-core-tools-3
 
     - name: 'Publish project to ld'
       env:
