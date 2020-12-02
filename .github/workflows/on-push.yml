@@ -1,0 +1,26 @@
+name: Build and test
+
+on:
+  push:
+  pull_request:
+    branches:
+      - master
+
+env:
+  DOTNET_VERSION: '3.1'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: 'Checkout GitHub Action'
+      uses: actions/checkout@master
+
+    - name: Setup DotNet ${{ env.DOTNET_VERSION }} Environment
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: 'Resolve dependencies and build project'
+      run: dotnet build --configuration Release --output ./output

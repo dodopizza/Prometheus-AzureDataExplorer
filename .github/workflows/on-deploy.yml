@@ -1,0 +1,56 @@
+name: Deploy
+
+on:
+  workflow_dispatch:
+
+env:
+  DOTNET_VERSION: '3.1'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: 'Checkout GitHub Action'
+      uses: actions/checkout@master
+
+    - name: Setup DotNet ${{ env.DOTNET_VERSION }} Environment
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: 'Resolve dependencies and build project'
+      run: dotnet build --configuration Release --output ./output
+
+    - name: 'Install azure-functions-core-tools-3'
+      run: sudo apt-get -y install azure-functions-core-tools-3
+
+    - name: 'Publish project to ld'
+      env:
+        SP_NAME: ${{ secrets.SP_LD }}
+        APPLICATION_SETTINGS: ${{ secrets.AS_LD }}
+        FUNCTIONAPP_NAME: ld-prometheus-adx
+      run: |
+        ./.github/scripts/01-az-login.sh SP_NAME
+        echo "${APPLICATION_SETTINGS}" > local.settings.json
+        func azure functionapp publish ${FUNCTIONAPP_NAME} --publish-local-settings --overwrite-settings
+
+    - name: 'Publish project to eu2'
+      env:
+        SP_NAME: ${{ secrets.SP_EU2 }}
+        APPLICATION_SETTINGS: ${{ secrets.AS_EU2 }}
+        FUNCTIONAPP_NAME: eu2-prometheus-adx
+      run: |
+        ./.github/scripts/01-az-login.sh SP_NAME
+        echo "${APPLICATION_SETTINGS}" > local.settings.json
+        func azure functionapp publish ${FUNCTIONAPP_NAME} --publish-local-settings --overwrite-settings
+
+    - name: 'Publish project to we'
+      env:
+        SP_NAME: ${{ secrets.SP_WE }}
+        APPLICATION_SETTINGS: ${{ secrets.AS_WE }}
+        FUNCTIONAPP_NAME: we-prometheus-adx
+      run: |
+        ./.github/scripts/01-az-login.sh SP_NAME
+        echo "${APPLICATION_SETTINGS}" > local.settings.json
+        func azure functionapp publish ${FUNCTIONAPP_NAME} --publish-local-settings --overwrite-settings
