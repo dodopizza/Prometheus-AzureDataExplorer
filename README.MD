@@ -1,48 +1,42 @@
-## Ресурсы
-Имя ресурса | Тип | Инфо
----|---|---
-`cluster`prometehusadx | Storage  Account |
-`cluster`-prometheus-adx | Service Principal |
-`cluster`-prometheus-adx | Event Hub Namespace
-`cluster`-prometheus-adx | Event Hub
-`cluster`-prometheus-adx | Event Grid Subscription
-`dododevkusto` | Azure Data Explorer Cluster | Относится к **dev/ld**
-`dodologs` | Azure Data Explorer Cluster | Относится к **production**
+## Resources
 
+Resource | Resource Type
+---|---
+`<cluster>-prometheus-adx` | Service Principal
+`<cluster>-prometheus-adx` | Function App
+`<cluster>-adx` | Azure Data Explorer Cluster
+`<cluster>prometheusadx`  | Storage  Account
+`<cluster>-prometheus-adx` | Event Hub Namespace
+`<cluster>-prometheus-adx` | Event Hub Instance
+`<cluster>-prometheus-adx` | Event Grid Subscription
 
-1) Выдать `Contributor` на функцию
-2) `Admin` на базу в кусто (на сам ресурс не нужно, достаточно только на базу)
-3) `Event Hub`:
-	1) Создаем Event Hub (Namespace) - `cluster`-prometheus-adx
-	2) В Event Hub Namespace создаем Event Hub - `cluster`-prometheus-adx
-4) `Event Grid Subscriptions`
-	1) Создаем Event Subscription `cluster`-prometheus-adx:
-		* Topic type - Storage Accounts
-		* Topic resource - наш `cluster`prometehusadx (Storage  Account)
-		* Filter event type - blob created
-		* Endpoint details - наш `cluster`-prometheus-adx (Event Hub)
-5) Идем в нужный `Azure Data Explorer Cluster`
-	1) Создаем базу `cluster`-prometheus
-		1) Permissions: в базу добавляем нашего `cluster`-prometheus-adx (Service Principal) с ролью View
-		2) Заходим в Azure Data Explorer и создаем таблицы `RawData`, `Metrics` (см.ниже KQL на создание)
-		2) Data  injestion:
-			* Connection type - Blob storage
-			* Storage Account / Event Grid - наши созданные выше ресурсы
-			* Table - `Metrics`
-			* Data format - CSV
-			* Column Mapping - CsvMapping
+## Step-by-step guide
 
-
-
-## Presetup
-```
-dotnet restore
-```
+1) Create `Service Principal` account;
+2) Create `Storage Account`;
+3) Create `Azure Data Explorer Cluster`;
+4) Create `Function App`;
+5) Add `Contributor` for `Service Principal` account;
+6) Add `Admin` for `Azure Data Explorer Cluster` database (only for database);
+7) Create `Event Hub Namespace` with `Event Hub` Instance
+8) Create `Event Grid Subscription` with following options:
+	* Topic type - **Storage Accounts**
+	* Topic resource - `Storage  Account` (2)
+	* Filter event type - **Blob created**
+	* Endpoint details - `Event Hub` (7)
+9) Create database `<cluster>-prometheus` in `Azure Data Explorer Cluster`:
+	* Permissions: Add `View` role for `Service Principal` (1)
+	* Create tables `RawData`, `Metrics` (KQL bellow)
+	* Data injestion:
+		* Connection type - **Blob storage**
+		* Storage Account / Event Grid - `Storage Account` (2) and `Event Grid Subscription` (8)
+		* Table - **Metrics**
+		* Data format - **CSV**
+		* Column Mapping - **CsvMapping**
 
 ## From prometheus to Kusto injestion flow
 1) Prometheus > remote_write > azure blob storage (csv)
 2) EventGrid
-
 
 ## Create table
 ```
