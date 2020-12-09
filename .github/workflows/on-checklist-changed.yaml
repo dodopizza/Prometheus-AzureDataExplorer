@@ -16,6 +16,6 @@ jobs:
       - name: Update NFR badges
         uses: dodopizza/gha-checklist-badges@main
         with:
-          readme-fname: README.md
+          readme-fname: README.MD
           nfr-fnames: OSS-TODO.md
           github_token: ${{ secrets.GITHUB_TOKEN }}

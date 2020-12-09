@@ -1,5 +1,8 @@
 # Prometheus remote storage adapter for Azure Data Explorer
 
+![Build and test](https://github.com/dodopizza/Prometheus-AzureDataExplorer/workflows/Build%20and%20test/badge.svg)
+![Deploy](https://github.com/dodopizza/Prometheus-AzureDataExplorer/workflows/Deploy/badge.svg)
+
 ## Overview
 
 This is a production-ready implementation of `Prometheus` remote storage adapter for `Azure Data Explorer` (a fast, fully managed data analytics service for real-time analysis on large volumes of data streaming).
