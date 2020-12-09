@@ -1,6 +1,6 @@
-![OSS-TODO](https://img.shields.io/badge/OSS--TODO-71%25%2020%2F28-green) 
-# Prometheus remote storage adapter for Azure Data Explorer
+# Prometheus adapter for Azure Data Explorer
 
+![OSS-TODO](https://img.shields.io/badge/OSS--TODO-71%25%2020%2F28-green) 
 ![Build and test](https://github.com/dodopizza/Prometheus-AzureDataExplorer/workflows/Build%20and%20test/badge.svg)
 ![Deploy](https://github.com/dodopizza/Prometheus-AzureDataExplorer/workflows/Deploy/badge.svg)
 
