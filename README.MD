@@ -22,6 +22,7 @@ The major functionality features:
 ### Integration principe
 
 ![Ingestion flow](docs/img/01.jpg)
+[miro](https://miro.com/app/board/o9J_lczmDj4=/)
 
 # How to run
 
