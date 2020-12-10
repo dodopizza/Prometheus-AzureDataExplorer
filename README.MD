@@ -4,6 +4,14 @@
 ![Build and test](https://github.com/dodopizza/Prometheus-AzureDataExplorer/workflows/Build%20and%20test/badge.svg)
 ![Deploy](https://github.com/dodopizza/Prometheus-AzureDataExplorer/workflows/Deploy/badge.svg)
 
+## Glossary
+
+* [Overview](#overview)
+* [How to run](#how-to-run)
+* [How to develop](#how-to-develop)
+* [Prometheus protocol buffer generator](PrometheusHelper/proto/README.MD)
+* [KQL examples](#get-metrics-kql-example)
+
 ## Overview
 
 This is a production-ready implementation of `Prometheus` remote storage adapter for `Azure Data Explorer` (a fast, fully managed data analytics service for real-time analysis on large volumes of data streaming).
@@ -12,7 +20,7 @@ The idea and first start for this project (previously it was a fork) became poss
 
 The major functionality features:
 1) Fully workable remote read/write;
-1) Possible to write a large amounts of metrics because of ingesting data via sets of `blobstorage` -> `eventgrid` -> `eventhub` chain (see [integration principe](#integration_principe) bellow);
+1) Possible to write a large amounts of metrics because of ingesting data via sets of `blobstorage` -> `eventgrid` -> `eventhub` chain (see [integration principe](#integration-principe) bellow);
 2) Does downsampling for old metrics for save db size.
 
 ### Information links:
