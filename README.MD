@@ -9,7 +9,7 @@
 * [Overview](#overview)
 * [How to run](#how-to-run)
 * [How to develop](#how-to-develop)
-* [Prometheus protocol buffer generator](PrometheusHelper/proto/README.MD)
+* [Prometheus protocol buffer generator](PrometheusHelper/proto/)
 * [KQL examples](#get-metrics-kql-example)
 
 ## Overview
@@ -115,7 +115,7 @@ You can fill this vars right in this file or later in the `./local.settings.json
 ### Prometheus protocol buffer generator
 
 * This repo uses prometheus .proto and convert them via `protoc` util to C# classes
-* Follow [this documentation](PrometheusHelper/proto/README.MD) and scripts to get, compile and keep up the latest versions
+* Follow [this documentation](PrometheusHelper/proto/) and scripts to get, compile and keep up the latest versions
 
 ## Additional information
 
