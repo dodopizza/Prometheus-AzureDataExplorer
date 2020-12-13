@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PromADX.Tests", "PromADX.Tests.csproj", "{7F8D2CA4-DC67-480A-9A07-5E083A3423A7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PromADX", "..\PromADX\PromADX.csproj", "{775C91FB-3FC9-477C-A7E1-74F3C48C0D59}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7F8D2CA4-DC67-480A-9A07-5E083A3423A7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7F8D2CA4-DC67-480A-9A07-5E083A3423A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7F8D2CA4-DC67-480A-9A07-5E083A3423A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7F8D2CA4-DC67-480A-9A07-5E083A3423A7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{775C91FB-3FC9-477C-A7E1-74F3C48C0D59}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{775C91FB-3FC9-477C-A7E1-74F3C48C0D59}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{775C91FB-3FC9-477C-A7E1-74F3C48C0D59}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{775C91FB-3FC9-477C-A7E1-74F3C48C0D59}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

@@ -23,4 +23,7 @@ jobs:
         dotnet-version: ${{ env.DOTNET_VERSION }}
 
     - name: 'Resolve dependencies and build project'
-      run: dotnet build --configuration Release --output ./output
+      run: dotnet build --configuration Release --output ./output ./src/PromADX
+
+    - name: 'Run tests'
+      run: dotnet test src/PromADX.Tests/
