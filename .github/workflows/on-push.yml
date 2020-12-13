@@ -25,5 +25,8 @@ jobs:
     - name: 'Restore packages'
       run: dotnet restore src/PromADX.Tests/
 
+    - name: 'Build project'
+      run: dotnet build src/PromADX/
+
     - name: 'Run tests'
       run: dotnet test src/PromADX.Tests/
