@@ -3,7 +3,7 @@ using Snappy.Sharp;
 
 namespace PromADX.PrometheusHelper
 {
-    public static class Conversion
+    public static class HttpConversion
     {
         private static readonly SnappyDecompressor _decompressor = new SnappyDecompressor();
 

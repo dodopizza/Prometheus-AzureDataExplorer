@@ -35,7 +35,7 @@ namespace PromADX.PrometheusRead
             HttpRequest req,
             ILogger log)
         {
-            var decompressed = Conversion.DecompressBody(req.Body);
+            var decompressed = HttpConversion.DecompressBody(req.Body);
             if (decompressed != null)
             {
                 InitializeKustoClient(log);
@@ -135,7 +135,7 @@ namespace PromADX.PrometheusRead
                     string.Join(
                         " and ",
                         aQuery.Matchers.Select(
-                            item => GenerateValueExpression(item.Name, item.Type, item.Value)
+                            item => KustoManipulations.ToKustoExpression(item.Name, item.Type, item.Value)
                         )
                     )
                 );
@@ -181,52 +181,30 @@ namespace PromADX.PrometheusRead
 
             while (reader.Read())
             {
-                var timeseriesItem = new Prometheus.TimeSeries();
+                var tsItem = new Prometheus.TimeSeries();
                 var labels = (string)reader["Labels"];
                 var samples = (JArray)reader["Samples"];
 
                 var samplesRange =
                     JsonConvert.DeserializeObject<IEnumerable<Prometheus.Sample>>(samples.ToString(),
                         jsonSerializerSettings);
-                timeseriesItem.Samples.AddRange(samplesRange);
+                tsItem.Samples.AddRange(samplesRange);
 
                 var labelsKv = JsonConvert.DeserializeObject<Dictionary<string, string>>(labels);
 
                 foreach (var label in labelsKv.Select(
                     item => new Prometheus.Label { Name = item.Key, Value = item.Value }))
                 {
-                    timeseriesItem.Labels.Add(label);
+                    tsItem.Labels.Add(label);
                 }
 
-                result.Timeseries.Add(timeseriesItem);
+                result.Timeseries.Add(tsItem);
             }
 
             reader.Close();
 
             return result;
         } // - QueryResult
-
-        private static string GenerateValueExpression(string name, LabelMatcher.Types.Type type, string value)
-        {
-            var keyMap = new Dictionary<string, string>()
-            {
-                {"__name__", "Name"},
-                {"job", "Job"},
-                {"instance", "Instance"}
-            };
-
-            var resultName = keyMap.ContainsKey(name) ? keyMap[name] : $"tostring(Labels.{name})";
-
-            const string queryTemplate = "( {0} {1} '{2}' )";
-
-            return type switch
-            {
-                LabelMatcher.Types.Type.Eq => string.Format(queryTemplate, resultName, "==", value),
-                LabelMatcher.Types.Type.Neq => string.Format(queryTemplate, resultName, "!=", value),
-                LabelMatcher.Types.Type.Re => string.Format(queryTemplate, resultName, "matches regex", value),
-                LabelMatcher.Types.Type.Nre => string.Format(queryTemplate, resultName, "!contains", value),
-                _ => String.Empty
-            };
-        } // - GenerateValueExpression
+        
     } // - class Read
 } // - namespace PrometheusRead

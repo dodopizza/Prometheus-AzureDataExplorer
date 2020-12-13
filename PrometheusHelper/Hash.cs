@@ -2,9 +2,9 @@ using System;
 
 namespace PromADX.PrometheusHelper
 {
-    public class Hash
+    public static class Hash
     {
-        public static long SdbmHash(string str)
+        public static long SDBMHash(string str)
         {
             long hash = 0;
             for (Int32 i = 0; i < str.Length; i++)

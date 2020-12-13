@@ -5,7 +5,7 @@ using Prometheus;
 
 namespace PromADX.PrometheusHelper
 {
-    public static class KustoRowConverter
+    public static class KustoManipulations
     {
         public static KustoRow ToKustoRow(TimeSeries ts)
         {
@@ -36,6 +36,30 @@ namespace PromADX.PrometheusHelper
 
             kustoRow.Labels = JsonConvert.SerializeObject(labelsDict);
             return kustoRow;
+        }
+
+
+        public static string ToKustoExpression(string name, LabelMatcher.Types.Type type, string value)
+        {
+            var keyMap = new Dictionary<string, string>()
+            {
+                {"__name__", "Name"},
+                {"job", "Job"},
+                {"instance", "Instance"}
+            };
+
+            var resultName = keyMap.ContainsKey(name) ? keyMap[name] : $"tostring(Labels.{name})";
+
+            const string queryTemplate = "( {0} {1} '{2}' )";
+
+            return type switch
+            {
+                LabelMatcher.Types.Type.Eq => string.Format(queryTemplate, resultName, "==", value),
+                LabelMatcher.Types.Type.Neq => string.Format(queryTemplate, resultName, "!=", value),
+                LabelMatcher.Types.Type.Re => string.Format(queryTemplate, resultName, "matches regex", value),
+                LabelMatcher.Types.Type.Nre => string.Format(queryTemplate, resultName, "!contains", value),
+                _ => string.Empty
+            };
         }
     }
 }

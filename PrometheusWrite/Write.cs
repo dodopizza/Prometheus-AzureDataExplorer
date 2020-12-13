@@ -21,30 +21,6 @@ using Prometheus;
 namespace PromADX.PrometheusWrite
 {
 
-    public class KustoRow
-    {
-        // Representing unixtime milliseconds as ISO 8601 string datetime
-        // https://docs.microsoft.com/en-us/azure/data-explorer/kusto/query/scalar-data-types/datetime
-        [Index(0)]
-        public string Datetime => DateTimeOffset.FromUnixTimeMilliseconds(Timestamp).UtcDateTime.ToString("yyyy-MM-ddTHH:mm:ss.fff");
-
-        [Index(1)]
-        public long Timestamp { get; set; }
-        [Index(2)]
-        public string Name { get; set; }
-        [Index(3)]
-        public string Instance { get; set; }
-        [Index(4)]
-        public string Job { get; set; }
-        [Index(5)]
-        public string Labels { get; set; }
-        [Index(6)]
-        public long LabelsHash => Hash.SdbmHash(Labels);
-
-        [Index(7)]
-        public double Value { get; set; }
-    }
-
     public static class Write
     {
         [FunctionName("Write")]
@@ -54,7 +30,7 @@ namespace PromADX.PrometheusWrite
         {
             log.LogInformation("[PrometheusWrite] HTTP trigger function processed a Write request.");
 
-            var decompressed = Conversion.DecompressBody(req.Body);
+            var decompressed = HttpConversion.DecompressBody(req.Body);
             var writeRequest = WriteRequest.Parser.ParseFrom(decompressed);
 
             //
@@ -77,8 +53,7 @@ namespace PromADX.PrometheusWrite
             //
 
             log.LogInformation("[PrometheusWrite] Create a kustoRows List with data");
-
-            var kustoRows = writeRequest.Timeseries.Select(KustoRowConverter.ToKustoRow).ToList();
+            var kustoRows = writeRequest.Timeseries.Select(KustoManipulations.ToKustoRow).ToList();
 
             //
 
@@ -99,40 +74,6 @@ namespace PromADX.PrometheusWrite
             log.LogInformation("[PrometheusWrite] Done");
             return new OkResult();
         }
-
-    }
-
-    public static class KustoRowConverter
-    {
-        public static KustoRow ToKustoRow(TimeSeries timeseries)
-        {
-            var kustoRow = new KustoRow
-            {
-                Timestamp = timeseries.Samples[0].Timestamp,
-                Value = timeseries.Samples[0].Value
-            };
-            var labelsDict = new SortedDictionary<string, string>();
-            foreach (var label in timeseries.Labels)
-            {
-                switch (label.Name)
-                {
-                    case "__name__":
-                        kustoRow.Name = label.Value;
-                        break;
-                    case "job":
-                        kustoRow.Job = label.Value;
-                        break;
-                    case "instance":
-                        kustoRow.Instance = label.Value;
-                        break;
-                }
-                labelsDict[label.Name] = label.Value;
-            }
-
-            kustoRow.Labels = JsonConvert.SerializeObject(labelsDict);
-            return kustoRow;
-        }
-
 
     }
 
