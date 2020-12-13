@@ -1,17 +1,15 @@
 using System;
-using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Host;
-using Microsoft.Extensions.Logging;
-using Kusto.Data.Common;
 using Kusto.Data;
 using Kusto.Data.Net.Client;
+using Microsoft.Azure.WebJobs;
+using Microsoft.Extensions.Logging;
 
-namespace PrometheusDownSampling
+namespace PromADX.PrometheusDownSampling
 {
     public static class DownSampling
     {
         [FunctionName("DownSampling")]
-        public static void Run([TimerTrigger("0 15,45 * * * *")]TimerInfo myTimer, ILogger log)
+        public static void Run([TimerTrigger("0 15,45 * * * *")] TimerInfo myTimer, ILogger log)
         {
             log.LogInformation($"C# Timer trigger function executed at: {DateTime.Now}");
 
@@ -21,7 +19,7 @@ namespace PrometheusDownSampling
 
             var execTime = DateTime.Now.AddDays(-1).ToString(string.Format(timeTagTemplate, tagMinute));
 
-            KustoConnectionStringBuilder connection =
+            var connection =
                 new KustoConnectionStringBuilder(Environment.GetEnvironmentVariable("kustoUrl", EnvironmentVariableTarget.Process)).WithAadApplicationKeyAuthentication(
                         applicationClientId: Environment.GetEnvironmentVariable("appClientId", EnvironmentVariableTarget.Process),
                         applicationKey: Environment.GetEnvironmentVariable("appClientSecret", EnvironmentVariableTarget.Process),
@@ -53,14 +51,13 @@ namespace PrometheusDownSampling
                     Samples=make_list( pack( 'Timestamp', Timestamp, 'Value', Value ) ) by LabelsHash
             ";
 
-            var kustosql = string.Format(query, execTime);
+            var kql = string.Format(query, execTime);
 
-            log.LogInformation($"KQL: {kustosql}");
+            log.LogInformation($"KQL: {kql}");
 
             adx.ExecuteControlCommand(
-                databaseName: Environment.GetEnvironmentVariable("kustoDatabase"),
-                command: kustosql,
-                null);
+                Environment.GetEnvironmentVariable("kustoDatabase"),
+                kql);
 
         }
     }

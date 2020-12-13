@@ -1,65 +1,57 @@
 using System;
-using System.IO;
-using System.IO.Compression;
-using System.Text;
-using System.Data;
-using System.Linq;
 using System.Collections.Generic;
+using System.Data;
 using System.Diagnostics;
-
-
-using Newtonsoft.Json.Linq;
-
+using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
+using Kusto.Data;
+using Kusto.Data.Common;
+using Kusto.Data.Net.Client;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-
+using Newtonsoft.Json.Linq;
+using PromADX.PrometheusHelper;
+using Prometheus;
 using Snappy.Sharp;
 
-using Prometheus;
-using PrometheusHelper.Helper;
-
-
-using Kusto.Data.Common;
-using Kusto.Data;
-using Kusto.Data.Net.Client;
-
-
-namespace PrometheusRead
+namespace PromADX.PrometheusRead
 {
     public static class Read
     {
-        private static Object _lock = new object();
-        private static ICslQueryProvider adx;
-        private static Boolean _isInitialized = false;
+        private static readonly object Lock = new object();
+        private static ICslQueryProvider _adx;
+        private static bool _isInitialized = false;
 
-        private static SnappyCompressor compressor = new SnappyCompressor();
+        private static readonly SnappyCompressor Compressor = new SnappyCompressor();
 
         [FunctionName("Read")]
         public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)]
+            HttpRequest req,
             ILogger log)
         {
-
             var decompressed = Conversion.DecompressBody(req.Body);
             if (decompressed != null)
             {
                 InitializeKustoClient(log);
 
-                var readrequest = ReadRequest.Parser.ParseFrom(decompressed);
-                log.LogMetric("querycount", readrequest.Queries.Count, new Dictionary<String, object>() { { "type", "count" } });
+                var readRequest = ReadRequest.Parser.ParseFrom(decompressed);
+                log.LogMetric("querycount", readRequest.Queries.Count,
+                    new Dictionary<string, object>() { { "type", "count" } });
 
-                ReadResponse response = CreateResponse(readrequest, log);
+                var response = CreateResponse(readRequest, log);
 
-                log.LogMetric("result", response.Results.Count , new Dictionary<String, object>() { { "type", "count" } });
-                log.LogMetric("timeseriesread", response.Results.Select(_ => _.Timeseries.Count).Sum(__ => __), new Dictionary<String, object>() { { "type", "count" } });
+                log.LogMetric("result", response.Results.Count, new Dictionary<string, object>() { { "type", "count" } });
+                log.LogMetric("timeseriesread", response.Results.Select(_ => _.Timeseries.Count).Sum(__ => __),
+                    new Dictionary<string, object>() { { "type", "count" } });
 
-                MemoryStream ms = new MemoryStream();
-                Google.Protobuf.CodedOutputStream output = new Google.Protobuf.CodedOutputStream(ms);
+                var ms = new MemoryStream();
+                var output = new Google.Protobuf.CodedOutputStream(ms);
                 response.WriteTo(output);
 
                 output.Flush();
@@ -68,10 +60,11 @@ namespace PrometheusRead
 
                 if (resultUncompressed.Length > 0)
                 {
-                    //should be at least the size of the uncompressed one
-                    byte[] resultCompressed = new byte[resultUncompressed.Length*2];
+                    // Should be at least the size of the uncompressed one
+                    byte[] resultCompressed = new byte[resultUncompressed.Length * 2];
 
-                    var compressedSize = compressor.Compress(resultUncompressed, 0, resultUncompressed.Length, resultCompressed);
+                    var compressedSize = Compressor.Compress(resultUncompressed, 0, resultUncompressed.Length,
+                        resultCompressed);
 
                     Array.Resize(ref resultCompressed, compressedSize);
 
@@ -84,38 +77,42 @@ namespace PrometheusRead
             }
 
             return null;
-
         } // - function Read
 
         private static void InitializeKustoClient(ILogger log)
         {
-            lock (_lock)
+            lock (Lock)
             {
-                if(!_isInitialized)
+                if (!_isInitialized)
                 {
-                    log.LogInformation("[PrometehusRead] [InitializeKustoClient] Initialize");
-                    KustoConnectionStringBuilder connection =
-                        new KustoConnectionStringBuilder(Environment.GetEnvironmentVariable("kustoUrl", EnvironmentVariableTarget.Process)).WithAadApplicationKeyAuthentication(
-                        applicationClientId: Environment.GetEnvironmentVariable("appClientId", EnvironmentVariableTarget.Process),
-                        applicationKey: Environment.GetEnvironmentVariable("appClientSecret", EnvironmentVariableTarget.Process),
-                        authority: Environment.GetEnvironmentVariable("tenantId", EnvironmentVariableTarget.Process));
+                    log.LogInformation("[PrometheusRead] [InitializeKustoClient] Initialize");
+                    var connection =
+                        new KustoConnectionStringBuilder(
+                                Environment.GetEnvironmentVariable("kustoUrl", EnvironmentVariableTarget.Process))
+                            .WithAadApplicationKeyAuthentication(
+                                applicationClientId: Environment.GetEnvironmentVariable("appClientId",
+                                    EnvironmentVariableTarget.Process),
+                                applicationKey: Environment.GetEnvironmentVariable("appClientSecret",
+                                    EnvironmentVariableTarget.Process),
+                                authority: Environment.GetEnvironmentVariable("tenantId",
+                                    EnvironmentVariableTarget.Process));
 
-                    adx = KustoClientFactory.CreateCslQueryProvider(connection);
+                    _adx = KustoClientFactory.CreateCslQueryProvider(connection);
 
                     _isInitialized = true;
                 }
-                log.LogInformation("[PrometehusRead] [InitializeKustoClient] Ok");
+
+                log.LogInformation("[PrometheusRead] [InitializeKustoClient] Ok");
             }
         } // - InitializeKustoClient
 
 
         private static ReadResponse CreateResponse(ReadRequest readrequest, ILogger log)
         {
-            ReadResponse result = new ReadResponse();
+            var result = new ReadResponse();
+            var taskList = new List<Task<IDataReader>>();
 
-            List<Task<IDataReader>> tasklist = new List<Task<IDataReader>>();
-
-            string MetricaQueryTemplate = @"
+            const string metricQueryTemplate = @"
                 Metrics
                 | where (EndDatetime >= unixtime_milliseconds_todatetime({0})) and (StartDatetime <= unixtime_milliseconds_todatetime({1})) and ( {2} )
                 | summarize Labels=tostring(any(Labels)), Samples=make_list( Samples ) by LabelsHash
@@ -126,17 +123,16 @@ namespace PrometheusRead
                 )
             ";
 
-            Stopwatch timer = new Stopwatch();
+            var timer = new Stopwatch();
             timer.Start();
 
             foreach (var aQuery in readrequest.Queries)
             {
-
-                var kustosql = string.Format(
-                    MetricaQueryTemplate,
+                var kql = string.Format(
+                    metricQueryTemplate,
                     aQuery.StartTimestampMs,
                     aQuery.EndTimestampMs,
-                    String.Join(
+                    string.Join(
                         " and ",
                         aQuery.Matchers.Select(
                             item => GenerateValueExpression(item.Name, item.Type, item.Value)
@@ -144,31 +140,31 @@ namespace PrometheusRead
                     )
                 );
 
-                log.LogInformation($"KQL: {kustosql}");
+                log.LogInformation($"KQL: {kql}");
 
-                tasklist.Add(
-                    adx.ExecuteQueryAsync(
-                        databaseName: Environment.GetEnvironmentVariable("kustoDatabase"),
-                        query: kustosql,
+                taskList.Add(
+                    _adx.ExecuteQueryAsync(
+                        Environment.GetEnvironmentVariable("kustoDatabase"),
+                        kql,
                         null
                     )
                 );
-
             } // - foreach readrequest.Queries
 
-            log.LogInformation( "[PrometehusRead] [ExecuteQueries] Queries count: " + tasklist.Count() );
-            Task.WaitAll(tasklist.ToArray());
+            log.LogInformation("[PrometheusRead] [ExecuteQueries] Queries count: " + taskList.Count());
+            Task.WaitAll(taskList.ToArray());
 
             timer.Stop();
-            log.LogInformation( "[PrometehusRead] [ExecuteQueries] Execution time: " + timer.Elapsed );
+            log.LogInformation("[PrometheusRead] [ExecuteQueries] Execution time: " + timer.Elapsed);
 
-            log.LogInformation( "[PrometehusRead] [CreateQueryResult] Start serializing results" );
+            log.LogInformation("[PrometheusRead] [CreateQueryResult] Start serializing results");
             timer.Reset();
 
-            result.Results.AddRange(tasklist.Select(aTask => CreateQueryResult(aTask.Result, log)));
+            result.Results.AddRange(taskList.Select(aTask => CreateQueryResult(aTask.Result, log)));
 
             timer.Stop();
-            log.LogInformation( "[PrometehusRead] [CreateQueryResult] Serializing done. Execution time: " + timer.Elapsed );
+            log.LogInformation(
+                "[PrometheusRead] [CreateQueryResult] Serializing done. Execution time: " + timer.Elapsed);
 
             return result;
         } // - ReadResponse
@@ -186,25 +182,23 @@ namespace PrometheusRead
             while (reader.Read())
             {
                 var timeseriesItem = new Prometheus.TimeSeries();
-                var Labels = (string)reader["Labels"];
-                var Samples = (JArray)reader["Samples"];
+                var labels = (string)reader["Labels"];
+                var samples = (JArray)reader["Samples"];
 
-                var samplesRange = JsonConvert.DeserializeObject<IEnumerable<Prometheus.Sample>>( Samples.ToString(), jsonSerializerSettings );
+                var samplesRange =
+                    JsonConvert.DeserializeObject<IEnumerable<Prometheus.Sample>>(samples.ToString(),
+                        jsonSerializerSettings);
                 timeseriesItem.Samples.AddRange(samplesRange);
 
-                var labelsKV = JsonConvert.DeserializeObject<Dictionary<string,string>>(Labels);
-                var LabelsProm = new List<Prometheus.Label>();
+                var labelsKv = JsonConvert.DeserializeObject<Dictionary<string, string>>(labels);
 
-                foreach ( KeyValuePair<string, string> item in labelsKV )
+                foreach (var label in labelsKv.Select(
+                    item => new Prometheus.Label { Name = item.Key, Value = item.Value }))
                 {
-                    var label = new Prometheus.Label();
-                    label.Name = item.Key;
-                    label.Value = item.Value;
-
                     timeseriesItem.Labels.Add(label);
                 }
 
-                result.Timeseries.Add( timeseriesItem );
+                result.Timeseries.Add(timeseriesItem);
             }
 
             reader.Close();
@@ -212,34 +206,27 @@ namespace PrometheusRead
             return result;
         } // - QueryResult
 
-        private static String GenerateValueExpression(string name, LabelMatcher.Types.Type type, string value)
+        private static string GenerateValueExpression(string name, LabelMatcher.Types.Type type, string value)
         {
-            var KeyMap = new Dictionary<String, String>(){
-                { "__name__", "Name" },
-                { "job",      "Job" },
-                { "instance", "Instance" }
+            var keyMap = new Dictionary<string, string>()
+            {
+                {"__name__", "Name"},
+                {"job", "Job"},
+                {"instance", "Instance"}
             };
 
-            string resultName = KeyMap.ContainsKey(name) ? KeyMap[name] : $"tostring(Labels.{name})";
+            var resultName = keyMap.ContainsKey(name) ? keyMap[name] : $"tostring(Labels.{name})";
 
-            string queryTemplate = "( {0} {1} '{2}' )";
+            const string queryTemplate = "( {0} {1} '{2}' )";
 
-            switch (type)
+            return type switch
             {
-                case LabelMatcher.Types.Type.Eq:
-                    return string.Format(queryTemplate, resultName, "==", value );
-                case LabelMatcher.Types.Type.Neq:
-                    return string.Format(queryTemplate, resultName, "!=", value );
-                case LabelMatcher.Types.Type.Re:
-                    return string.Format(queryTemplate, resultName, "matches regex", value );
-                case LabelMatcher.Types.Type.Nre:
-                    return string.Format(queryTemplate, resultName, "!contains", value );
-                default:
-                    return String.Empty;
-            }
-
+                LabelMatcher.Types.Type.Eq => string.Format(queryTemplate, resultName, "==", value),
+                LabelMatcher.Types.Type.Neq => string.Format(queryTemplate, resultName, "!=", value),
+                LabelMatcher.Types.Type.Re => string.Format(queryTemplate, resultName, "matches regex", value),
+                LabelMatcher.Types.Type.Nre => string.Format(queryTemplate, resultName, "!contains", value),
+                _ => String.Empty
+            };
         } // - GenerateValueExpression
-
     } // - class Read
-
 } // - namespace PrometheusRead
