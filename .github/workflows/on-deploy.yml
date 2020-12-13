@@ -19,9 +19,6 @@ jobs:
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
 
-    - name: 'Resolve dependencies and build project'
-      run: dotnet build --configuration Release --output ./output ./src/PromADX
-
     - name: 'Install azure-functions-core-tools-3'
       run: sudo apt-get -y install azure-functions-core-tools-3
 
