@@ -1,6 +1,6 @@
 # Prometheus adapter for Azure Data Explorer
 
-![OSS-TODO](https://img.shields.io/badge/OSS--TODO-71%25%2020%2F28-green) 
+![OSS-TODO](https://img.shields.io/badge/OSS--TODO-82%25%2023%2F28-green) 
 ![Build and test](https://github.com/dodopizza/Prometheus-AzureDataExplorer/workflows/Build%20and%20test/badge.svg)
 ![Deploy](https://github.com/dodopizza/Prometheus-AzureDataExplorer/workflows/Deploy/badge.svg)
 
@@ -108,9 +108,9 @@ This repo contains [.devcontainer](https://code.visualstudio.com/docs/remote/con
 
 ### Before run within .devcontainer:
 
-Check the `.devcontainer/devcontainer.json` file > `remote Env` section for environment vars. 
-
-You can fill this vars right in this file or later in the `./local.settings.json` config file or in the debug settings configuration file (preferred way)
+You will need to setup some credentials to fully debug the functions. There are 2 ways for doing this:
+*) Check the `.devcontainer/devcontainer.json` file > `remote Env` section for environment vars.
+*) Or you can change the `./local.settings.json` config file. Don't forget to exclude this file from commit.
 
 ### Prometheus protocol buffer generator
 

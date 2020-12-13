@@ -2,6 +2,11 @@ name: Deploy
 
 on:
   workflow_dispatch:
+    inputs:
+      cluster:
+        description: 'Cluster: LD|EU2|WE'
+        required: true
+        default: 'LD'
 
 env:
   DOTNET_VERSION: '3.1'
@@ -19,38 +24,16 @@ jobs:
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
 
-    - name: 'Resolve dependencies and build project'
-      run: dotnet build --configuration Release --output ./output
-
     - name: 'Install azure-functions-core-tools-3'
       run: sudo apt-get -y install azure-functions-core-tools-3
 
-    - name: 'Publish project to ld'
+    - name: 'Publish project to ${{ github.event.inputs.cluster }}'
+      if: 
       env:
-        SP_NAME: ${{ secrets.SP_LD }}
-        APPLICATION_SETTINGS: ${{ secrets.AS_LD }}
-        FUNCTIONAPP_NAME: ld-prometheus-adx
+        SP_NAME: ${{ secrets[format('SP_{0}', github.event.inputs.cluster)] }}
+        APPLICATION_SETTINGS: ${{ secrets[format('AS_{0}', github.event.inputs.cluster)] }}
+        FUNCTIONAPP_NAME: ${{ secrets[format('{0}-prometheus-adx', github.event.inputs.cluster)] }}
       run: |
         ./.github/scripts/01-az-login.sh SP_NAME
         echo "${APPLICATION_SETTINGS}" > local.settings.json
-        func azure functionapp publish ${FUNCTIONAPP_NAME} --publish-local-settings --overwrite-settings
-
-    - name: 'Publish project to eu2'
-      env:
-        SP_NAME: ${{ secrets.SP_EU2 }}
-        APPLICATION_SETTINGS: ${{ secrets.AS_EU2 }}
-        FUNCTIONAPP_NAME: eu2-prometheus-adx
-      run: |
-        ./.github/scripts/01-az-login.sh SP_NAME
-        echo "${APPLICATION_SETTINGS}" > local.settings.json
-        func azure functionapp publish ${FUNCTIONAPP_NAME} --publish-local-settings --overwrite-settings
-
-    - name: 'Publish project to we'
-      env:
-        SP_NAME: ${{ secrets.SP_WE }}
-        APPLICATION_SETTINGS: ${{ secrets.AS_WE }}
-        FUNCTIONAPP_NAME: we-prometheus-adx
-      run: |
-        ./.github/scripts/01-az-login.sh SP_NAME
-        echo "${APPLICATION_SETTINGS}" > local.settings.json
-        func azure functionapp publish ${FUNCTIONAPP_NAME} --publish-local-settings --overwrite-settings
+        func azure functionapp publish $(echo "${FUNCTIONAPP_NAME}" | awk '{print tolower($0)}') --publish-local-settings --overwrite-settings

@@ -3,6 +3,7 @@ default:
 
 stages:
   - build
+  - test
   - deploy
 
 include:

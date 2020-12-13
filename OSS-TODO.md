@@ -6,11 +6,11 @@
   - [x] Create solution file in the project root.
   - [x] Update .gitignore if needed.
 - Code:
-  - [ ] Check code (refactoring if needed).
-  - [ ] Check namespaces.
+  - [x] Check code (refactoring if needed).
+  - [x] Check namespaces.
   - [x] Check language. All coments in code should be in English.
 - [x] Change project name. Current name of the project does not reflect its purpose.
-- [ ] Introduce project style guide by adding .editorconfig.
+- [x] Introduce project style guide by adding .editorconfig.
 - Required GitHub files:
   - [x] README.md - translate to English. Possibly update or rewrite. Make references for initial project.
   - [x] LICENSE - Apache 2.0
