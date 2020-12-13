@@ -3,8 +3,8 @@ name: Deploy
 on:
   workflow_dispatch:
     inputs:
-      environment:
-        description: 'LD|EU2|WE'
+      cluster:
+        description: 'Cluster: LD|EU2|WE'
         required: true
         default: 'LD'
 
