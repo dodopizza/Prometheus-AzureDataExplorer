@@ -23,15 +23,27 @@ build/dotnet-dev-image:
         .
     - docker push $CI_REGISTRY_IMAGE/dotnetdev:latest-cache
 
+test:
+  stage: test
+  image: $CI_REGISTRY_IMAGE/dotnetdev:latest-cache
+  extends:
+    - .only/refs/master
+  script:
+    - dotnet restore src/PromADX.Tests/
+    - dotnet test src/PromADX.Tests/
+  dependencies:
+    - build/dotnet-dev-image
+
 .deploy/function:
   stage: deploy
   image: $CI_REGISTRY_IMAGE/dotnetdev:latest-cache
   script:
     - ./.gitlab/scripts/01-az-login.sh SP_ADX
     - cp -f ${APPLICATION_SETTINGS} local.settings.json
-    - func azure functionapp publish ${FUNCTIONAPP_NAME} --publish-local-settings --overwrite-settings
+    - echo "Skip real deploy step for ${FUNCTIONAPP_NAME} because of implementation via GHA"
+    # - func azure functionapp publish ${FUNCTIONAPP_NAME} --publish-local-settings --overwrite-settings
   dependencies:
-    - build/dotnet-dev-image
+    - test
 
 deploy/function/ld:
   extends:

@@ -1,52 +1,81 @@
-## Ресурсы
-Имя ресурса | Тип | Инфо
----|---|---
-`cluster`prometehusadx | Storage  Account |
-`cluster`-prometheus-adx | Service Principal |
-`cluster`-prometheus-adx | Event Hub Namespace
-`cluster`-prometheus-adx | Event Hub
-`cluster`-prometheus-adx | Event Grid Subscription
-`dododevkusto` | Azure Data Explorer Cluster | Относится к **dev/ld**
-`dodologs` | Azure Data Explorer Cluster | Относится к **production**
+# Prometheus adapter for Azure Data Explorer
 
+![OSS-TODO](https://img.shields.io/badge/OSS--TODO-82%25%2023%2F28-green) 
+![Build and test](https://github.com/dodopizza/Prometheus-AzureDataExplorer/workflows/Build%20and%20test/badge.svg)
+![Deploy](https://github.com/dodopizza/Prometheus-AzureDataExplorer/workflows/Deploy/badge.svg)
 
-1) Выдать `Contributor` на функцию
-2) `Admin` на базу в кусто (на сам ресурс не нужно, достаточно только на базу)
-3) `Event Hub`:
-	1) Создаем Event Hub (Namespace) - `cluster`-prometheus-adx
-	2) В Event Hub Namespace создаем Event Hub - `cluster`-prometheus-adx
-4) `Event Grid Subscriptions`
-	1) Создаем Event Subscription `cluster`-prometheus-adx:
-		* Topic type - Storage Accounts
-		* Topic resource - наш `cluster`prometehusadx (Storage  Account)
-		* Filter event type - blob created
-		* Endpoint details - наш `cluster`-prometheus-adx (Event Hub)
-5) Идем в нужный `Azure Data Explorer Cluster`
-	1) Создаем базу `cluster`-prometheus
-		1) Permissions: в базу добавляем нашего `cluster`-prometheus-adx (Service Principal) с ролью View
-		2) Заходим в Azure Data Explorer и создаем таблицы `RawData`, `Metrics` (см.ниже KQL на создание)
-		2) Data  injestion:
-			* Connection type - Blob storage
-			* Storage Account / Event Grid - наши созданные выше ресурсы
-			* Table - `Metrics`
-			* Data format - CSV
-			* Column Mapping - CsvMapping
+## Glossary
 
+* [Overview](#overview)
+* [How to run](#how-to-run)
+* [How to develop](#how-to-develop)
+* [Prometheus protocol buffer generator](PrometheusHelper/proto/)
+* [KQL examples](#get-metrics-kql-example)
 
+## Overview
 
-## Presetup
-```
-dotnet restore
-```
+This is a production-ready implementation of `Prometheus` remote storage adapter for `Azure Data Explorer` (a fast, fully managed data analytics service for real-time analysis on large volumes of data streaming).
 
-## From prometheus to Kusto injestion flow
-1) Prometheus > remote_write > azure blob storage (csv)
-2) EventGrid
+The idea and first start for this project (previously it was a fork) became possible thanks to [PrometheusToAdx](https://github.com/cosh/PrometheusToAdx) repository.
 
+The major functionality features:
+1) Fully workable remote read/write;
+1) Possible to write a large amounts of metrics because of ingesting data via sets of `blobstorage` -> `eventgrid` -> `eventhub` chain (see [integration principe](#integration-principe) bellow);
+2) Does downsampling for old metrics for save db size.
 
-## Create table
+### Information links:
+* [Prometheus remote storage integrations](https://prometheus.io/docs/prometheus/latest/storage/#remote-storage-integrations)
+* [Azure Data Explorer data ingestion](https://docs.microsoft.com/en-us/azure/data-explorer/ingest-data-overview)
+
+### Integration principe
+
+![Ingestion flow](docs/img/01.jpg)
+[miro](https://miro.com/app/board/o9J_lczmDj4=/)
+
+# How to run
+
+## 1. Required resources table
+
+Resource | Resource Type
+---|---
+`<cluster>-prometheus-adx` | Service Principal
+`<cluster>-prometheus-adx` | Function App
+`<cluster>-adx` | Azure Data Explorer Cluster
+`<cluster>prometheusadx`  | Storage  Account
+`<cluster>-prometheus-adx` | Event Hub Namespace
+`<cluster>-prometheus-adx` | Event Hub Instance
+`<cluster>-prometheus-adx` | Event Grid Subscription
+
+## 2. Step-by-step guide
+
+1) Create `Service Principal` account;
+2) Create `Storage Account`;
+3) Create `Azure Data Explorer Cluster`;
+4) Create `Function App`;
+5) Add `Contributor` for `Service Principal` account;
+6) Add `Admin` for `Azure Data Explorer Cluster` database (only for database);
+7) Create `Event Hub Namespace` with `Event Hub` Instance
+8) Create `Event Grid Subscription` with following options:
+	* Topic type - **Storage Accounts**
+	* Topic resource - `Storage  Account` (2)
+	* Filter event type - **Blob created**
+	* Endpoint details - `Event Hub` (7)
+9) Create database `<cluster>-prometheus` in `Azure Data Explorer Cluster`:
+	* Permissions: Add `View` role for `Service Principal` (1)
+	* Create tables `RawData`, `Metrics` (KQL bellow)
+	* Data injestion:
+		* Connection type - **Blob storage**
+		* Storage Account / Event Grid - `Storage Account` (2) and `Event Grid Subscription` (8)
+		* Event type - **Blob created**
+		* Table - **Metrics**
+		* Data format - **CSV**
+		* Mapping name - **CsvMapping**
+
+## Init tables KQLs
+
 ```
 .drop table Metrics ifexists
+.drop table RawData ifexists
 
 .create table RawData (Datetime: datetime, Timestamp: long, Name: string, Instance: string, Job: string, Labels: dynamic, LabelsHash: long, Value: real)
 
@@ -67,20 +96,31 @@ dotnet restore
 .create table Metrics (LabelsHash: long, StartDatetime: datetime, EndDatetime: datetime, Name: string, Instance: string, Job: string, Labels: dynamic, Samples: dynamic)
 ```
 
+# How to develop
 
-## Get metrics example
-```
-Metrics
-| where (EndDatetime >= unixtime_milliseconds_todatetime(1591084670098)) and (StartDatetime <= unixtime_milliseconds_todatetime(1591092170098)) and ( ( Name == 'mysql_global_status_queries' ) )
-| summarize Labels=tostring(any(Labels)), Samples=make_list( Samples ) by LabelsHash
-| mv-apply Samples = Samples on
-(
-    order by tolong(Samples['Timestamp']) asc
-    | summarize Samples=make_list(pack('Timestamp', Samples['Timestamp'], 'Value', Samples['Value']))
-)
-```
+This repo contains [.devcontainer](https://code.visualstudio.com/docs/remote/containers) for VSCode, which runs a set of containers with:
+* Prometheus server as is
+* Prometheus server with remote_read/remote_write for local debug
+* Prometheus server with remote_read/remote_write for local debug
+* Grafana
+* Node-exporter node for some example data
+* Dev-container with .net core for azure functions installation with all requirements and vscode extensions for C# development
 
-## Prometheus read/write format
+### Before run within .devcontainer:
+
+You will need to setup some credentials to fully debug the functions. There are 2 ways for doing this:
+*) Check the `.devcontainer/devcontainer.json` file > `remote Env` section for environment vars.
+*) Or you can change the `./local.settings.json` config file. Don't forget to exclude this file from commit.
+
+### Prometheus protocol buffer generator
+
+* This repo uses prometheus .proto and convert them via `protoc` util to C# classes
+* Follow [this documentation](PrometheusHelper/proto/) and scripts to get, compile and keep up the latest versions
+
+## Additional information
+
+### Prometheus read/write format
+
 ```
 Samples:[
 	{
@@ -102,4 +142,16 @@ Labels:[
 		value:
 	}...
 ]
+```
+
+### Get metrics KQL example
+```
+Metrics
+| where (EndDatetime >= unixtime_milliseconds_todatetime(1591084670098)) and (StartDatetime <= unixtime_milliseconds_todatetime(1591092170098)) and ( ( Name == 'mysql_global_status_queries' ) )
+| summarize Labels=tostring(any(Labels)), Samples=make_list( Samples ) by LabelsHash
+| mv-apply Samples = Samples on
+(
+    order by tolong(Samples['Timestamp']) asc
+    | summarize Samples=make_list(pack('Timestamp', Samples['Timestamp'], 'Value', Samples['Value']))
+)
 ```
