@@ -10,7 +10,7 @@
 	// "postCreateCommand": "dotnet restore",
 
 	// Set *default* container specific settings.json values on container create.
-	"settings": {
+	"settings": { 
 		"terminal.integrated.shell.linux": "/bin/bash"
 	},
 
@@ -20,7 +20,7 @@
 		"ms-vscode.csharp",
 		"ms-dotnettools.csharp"
 	],
-
+	
 	"remoteEnv":{
 		// https://docs.microsoft.com/en-us/azure/azure-functions/functions-app-settings#azurewebjobsstorage
 		"AzureWebJobsStorage": "<blobstorage connection string>",
@@ -28,16 +28,16 @@
 		"tenantId": "<the tenant id>",
 		"appClientId": "<the client id of the aad app>",
 		"appClientSecret": "<the secret for aad app>",
-
-		"kustoUrl": "<the kust url>",
+	
+		"kustoUrl": "<the kusto url>",
 		"kustoDatabase": "prometheus",
 
 		"blobStorageConnectionString": "<blobstorage connection string>",
 		"blobStorageContainerName": "prometheus"
-	}
+	},
 
 	// Use 'postCreateCommand' to run commands after the container is created.
-	// "postCreateCommand": "dotnet restore",
+	"postCreateCommand": "dotnet restore",
 
 	// Uncomment to connect as a non-root user. See https://aka.ms/vscode-remote/containers/non-root.
 	// "remoteUser": "vscode"
