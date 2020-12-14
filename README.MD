@@ -14,14 +14,15 @@
 
 ## Overview
 
-This is a production-ready implementation of `Prometheus` remote storage adapter for `Azure Data Explorer` (a fast, fully managed data analytics service for real-time analysis on large volumes of data streaming).
+This is a production-ready implementation of `Prometheus` remote storage adapter for `Azure Data Explorer` (a fast, fully managed data analytics service for real-time analysis on large volumes of data streaming). 
 
 The idea and first start for this project (previously it was a fork) became possible thanks to [PrometheusToAdx](https://github.com/cosh/PrometheusToAdx) repository.
 
 The major functionality features:
-1) Fully workable remote read/write;
-1) Possible to write a large amounts of metrics because of ingesting data via sets of `blobstorage` -> `eventgrid` -> `eventhub` chain (see [integration principe](#integration-principe) bellow);
-2) Does downsampling for old metrics for save db size.
+1) Uses [azure funtions](https://docs.microsoft.com/en-us/azure/azure-functions/)
+2) Fully workable remote read/write;
+3) Possible to write a large amounts of metrics because of ingesting data via sets of `blobstorage` -> `eventgrid` -> `eventhub` chain (see [integration principe](#integration-principe) bellow);
+4) Does downsampling for old metrics for save db size.
 
 ### Information links:
 * [Prometheus remote storage integrations](https://prometheus.io/docs/prometheus/latest/storage/#remote-storage-integrations)
@@ -101,7 +102,6 @@ Resource | Resource Type
 This repo contains [.devcontainer](https://code.visualstudio.com/docs/remote/containers) for VSCode, which runs a set of containers with:
 * Prometheus server as is
 * Prometheus server with remote_read/remote_write for local debug
-* Prometheus server with remote_read/remote_write for local debug
 * Grafana
 * Node-exporter node for some example data
 * Dev-container with .net core for azure functions installation with all requirements and vscode extensions for C# development
@@ -109,8 +109,8 @@ This repo contains [.devcontainer](https://code.visualstudio.com/docs/remote/con
 ### Before run within .devcontainer:
 
 You will need to setup some credentials to fully debug the functions. There are 2 ways for doing this:
-*) Check the `.devcontainer/devcontainer.json` file > `remote Env` section for environment vars.
-*) Or you can change the `./local.settings.json` config file. Don't forget to exclude this file from commit.
+* Check the `.devcontainer/devcontainer.json` file > `remote Env` section for environment vars.
+* Or you can change the `./local.settings.json` config file. Don't forget to exclude this file from commit.
 
 ### Prometheus protocol buffer generator
 
