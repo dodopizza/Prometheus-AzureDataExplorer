@@ -1,0 +1,45 @@
+// For format details, see https://aka.ms/vscode-remote/devcontainer.json or this file's README at:
+// https://github.com/microsoft/vscode-dev-containers/tree/v0.106.0/containers/azure-functions-dotnetcore-3.1
+{
+	"name": "Azure Functions & C# (.NET Core 3.1)",
+
+	"dockerComposeFile": "docker-compose.devcontainer.yml",
+	"service": "vscode",
+	"shutdownAction": "stopCompose",
+	"workspaceFolder": "/workspace",
+	// "postCreateCommand": "dotnet restore",
+
+	// Set *default* container specific settings.json values on container create.
+	"settings": {
+		"terminal.integrated.shell.linux": "/bin/bash"
+	},
+
+	// Add the IDs of extensions you want installed when the container is created.
+	"extensions": [
+		"ms-azuretools.vscode-azurefunctions",
+		"ms-vscode.csharp",
+		"ms-dotnettools.csharp"
+	],
+
+	"remoteEnv":{
+		// https://docs.microsoft.com/en-us/azure/azure-functions/functions-app-settings#azurewebjobsstorage
+		"AzureWebJobsStorage": "<blobstorage connection string>",
+
+		"tenantId": "<the tenant id>",
+		"appClientId": "<the client id of the aad app>",
+		"appClientSecret": "<the secret for aad app>",
+
+		"kustoUrl": "<the kust url>",
+		"kustoDatabase": "prometheus",
+
+		"blobStorageConnectionString": "<blobstorage connection string>",
+		"blobStorageContainerName": "prometheus"
+	}
+
+	// Use 'postCreateCommand' to run commands after the container is created.
+	// "postCreateCommand": "dotnet restore",
+
+	// Uncomment to connect as a non-root user. See https://aka.ms/vscode-remote/containers/non-root.
+	// "remoteUser": "vscode"
+
+}

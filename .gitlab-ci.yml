@@ -1,0 +1,10 @@
+default:
+  image: busybox
+
+stages:
+  - build
+  - deploy
+
+include:
+  - local: /.gitlab/ci/_common.yml
+  - local: /.gitlab/ci/main.yml

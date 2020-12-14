@@ -1,0 +1,47 @@
+.common/runners/dev:
+  tags:
+    - dodo
+    - dev
+  variables:
+    CLUSTER: dev
+
+.common/runners/ld:
+  tags:
+    - dodo
+    - ld
+  variables:
+    CLUSTER: ld
+
+.common/runners/we:
+  tags:
+    - dodo
+    - we
+  variables:
+    CLUSTER: we
+
+.common/runners/eu2:
+  tags:
+    - dodo
+    - eu2
+  variables:
+    CLUSTER: eu2
+
+.common/runners/chn:
+  tags:
+    - dodo
+    - chn
+  variables:
+    CLUSTER: chn
+
+.common/dind_service:
+  services:
+    - docker:dind
+  variables:
+    DOCKER_HOST: tcp://docker:2375/
+    DOCKER_DRIVER: overlay
+    DOCKER_TLS_CERTDIR: ""
+    GIT_SSL_NO_VERIFY: "1"
+  before_script:
+    - docker info
+  after_script:
+    - docker images
