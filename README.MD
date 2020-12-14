@@ -19,7 +19,7 @@ This is a production-ready implementation of `Prometheus` remote storage adapter
 The idea and first start for this project (previously it was a fork) became possible thanks to [PrometheusToAdx](https://github.com/cosh/PrometheusToAdx) repository.
 
 The major functionality features:
-1) Uses [azure funtions](https://docs.microsoft.com/en-us/azure/azure-functions/)
+1) Uses [azure funtions](https://docs.microsoft.com/en-us/azure/azure-functions/);
 2) Fully workable remote read/write;
 3) Possible to write a large amounts of metrics because of ingesting data via sets of `blobstorage` -> `eventgrid` -> `eventhub` chain (see [integration principe](#integration-principe) bellow);
 4) Does downsampling for old metrics for save db size.
