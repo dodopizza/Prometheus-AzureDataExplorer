@@ -1,14 +1,14 @@
-.only/refs/master:
+.only/refs/main:
   only:
     refs:
-      - master
+      - main
 
 
 build/dotnet-dev-image:
   stage: build
   image: docker
   extends:
-    - .only/refs/master
+    - .only/refs/main
     - .common/runners/dev
     - .common/dind_service
   script:
@@ -27,7 +27,7 @@ test:
   stage: test
   image: $CI_REGISTRY_IMAGE/dotnetdev:latest-cache
   extends:
-    - .only/refs/master
+    - .only/refs/main
   script:
     - dotnet restore src/PromADX.Tests/
     - dotnet test src/PromADX.Tests/
@@ -47,7 +47,7 @@ test:
 
 deploy/function/ld:
   extends:
-    - .only/refs/master
+    - .only/refs/main
     - .common/runners/dev
     - .deploy/function
   environment:
@@ -57,7 +57,7 @@ deploy/function/ld:
 
 deploy/function/eu2:
   extends:
-    - .only/refs/master
+    - .only/refs/main
     - .common/runners/eu2
     - .deploy/function
   environment:
@@ -67,7 +67,7 @@ deploy/function/eu2:
 
 deploy/function/we:
   extends:
-    - .only/refs/master
+    - .only/refs/main
     - .common/runners/we
     - .deploy/function
   environment:
