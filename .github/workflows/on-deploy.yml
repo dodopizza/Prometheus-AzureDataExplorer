@@ -28,11 +28,11 @@ jobs:
       run: sudo apt-get -y install azure-functions-core-tools-3
 
     - name: 'Publish project to ${{ github.event.inputs.cluster }}'
-      if: 
+      if:
       env:
         SP_NAME: ${{ secrets[format('SP_{0}', github.event.inputs.cluster)] }}
         APPLICATION_SETTINGS: ${{ secrets[format('AS_{0}', github.event.inputs.cluster)] }}
-        FUNCTIONAPP_NAME: ${{ secrets[format('{0}-prometheus-adx', github.event.inputs.cluster)] }}
+        FUNCTIONAPP_NAME: ${{ format('{0}-prometheus-adx', github.event.inputs.cluster) }}
       run: |
         ./.github/scripts/01-az-login.sh SP_NAME
         echo "${APPLICATION_SETTINGS}" > local.settings.json
