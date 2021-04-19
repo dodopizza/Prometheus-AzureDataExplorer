@@ -26,6 +26,15 @@ jobs:
       - name: "Install azure-functions-core-tools-3"
         run: sudo apt-get -y install azure-functions-core-tools-3
 
+      - name: "Prepare settings for ${{ github.event.inputs.cluster }}"
+      if:
+      env:
+        SP_NAME: ${{ secrets[format('SP_{0}', github.event.inputs.cluster)] }}
+        APPLICATION_SETTINGS: ${{ secrets[format('AS_{0}', github.event.inputs.cluster)] }}
+      run: |
+        ./.github/scripts/01-az-login.sh SP_NAME
+        echo "${APPLICATION_SETTINGS}" > src/PromADX/local.settings.json
+
       - name: "Restore packages"
         run: dotnet restore src/PromADX.Tests/
 
@@ -38,10 +47,7 @@ jobs:
       - name: "Publish project to ${{ github.event.inputs.cluster }}"
         if:
         env:
-          SP_NAME: ${{ secrets[format('SP_{0}', github.event.inputs.cluster)] }}
-          APPLICATION_SETTINGS: ${{ secrets[format('AS_{0}', github.event.inputs.cluster)] }}
           FUNCTIONAPP_NAME: ${{ format('{0}-prometheus-adx', github.event.inputs.cluster) }}
         run: |
-          ./.github/scripts/01-az-login.sh SP_NAME
-          echo "${APPLICATION_SETTINGS}" > local.settings.json
+          cd src/PromADX
           func azure functionapp publish $(echo "${FUNCTIONAPP_NAME}" | awk '{print tolower($0)}') --publish-local-settings --overwrite-settings
