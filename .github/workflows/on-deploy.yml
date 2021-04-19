@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       cluster:
-        description: "Cluster: LD|EU2|WE"
+        description: 'Cluster: LD|WE'
         required: true
         default: "LD"
 

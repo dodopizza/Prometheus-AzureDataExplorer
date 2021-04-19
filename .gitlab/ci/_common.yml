@@ -19,20 +19,6 @@
   variables:
     CLUSTER: we
 
-.common/runners/eu2:
-  tags:
-    - dodo
-    - eu2
-  variables:
-    CLUSTER: eu2
-
-.common/runners/chn:
-  tags:
-    - dodo
-    - chn
-  variables:
-    CLUSTER: chn
-
 .common/dind_service:
   services:
     - docker:dind
