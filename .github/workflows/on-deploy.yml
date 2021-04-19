@@ -27,13 +27,13 @@ jobs:
         run: sudo apt-get -y install azure-functions-core-tools-3
 
       - name: "Prepare settings for ${{ github.event.inputs.cluster }}"
-      if:
-      env:
-        SP_NAME: ${{ secrets[format('SP_{0}', github.event.inputs.cluster)] }}
-        APPLICATION_SETTINGS: ${{ secrets[format('AS_{0}', github.event.inputs.cluster)] }}
-      run: |
-        ./.github/scripts/01-az-login.sh SP_NAME
-        echo "${APPLICATION_SETTINGS}" > src/PromADX/local.settings.json
+        if:
+        env:
+          SP_NAME: ${{ secrets[format('SP_{0}', github.event.inputs.cluster)] }}
+          APPLICATION_SETTINGS: ${{ secrets[format('AS_{0}', github.event.inputs.cluster)] }}
+        run: |
+          ./.github/scripts/01-az-login.sh SP_NAME
+          echo "${APPLICATION_SETTINGS}" > src/PromADX/local.settings.json
 
       - name: "Restore packages"
         run: dotnet restore src/PromADX.Tests/
