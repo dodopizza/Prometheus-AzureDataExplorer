@@ -7,26 +7,25 @@ on:
       - main
 
 env:
-  DOTNET_VERSION: '3.1'
+  DOTNET_VERSION: "3.1"
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v2
 
-    - name: 'Checkout GitHub Action'
-      uses: actions/checkout@master
+      - name: Setup DotNet ${{ env.DOTNET_VERSION }} Environment
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
 
-    - name: Setup DotNet ${{ env.DOTNET_VERSION }} Environment
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: ${{ env.DOTNET_VERSION }}
+      - name: "Restore packages"
+        run: dotnet restore src/PromADX.Tests/
 
-    - name: 'Restore packages'
-      run: dotnet restore src/PromADX.Tests/
+      - name: "Build project"
+        run: dotnet build src/PromADX/
 
-    - name: 'Build project'
-      run: dotnet build src/PromADX/
-
-    - name: 'Run tests'
-      run: dotnet test src/PromADX.Tests/
+      - name: "Run tests"
+        run: dotnet test src/PromADX.Tests/

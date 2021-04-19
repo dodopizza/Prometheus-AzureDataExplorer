@@ -4,36 +4,45 @@ on:
   workflow_dispatch:
     inputs:
       cluster:
-        description: 'Cluster: LD|EU2|WE'
+        description: "Cluster: LD|EU2|WE"
         required: true
-        default: 'LD'
+        default: "LD"
 
 env:
-  DOTNET_VERSION: '3.1'
+  DOTNET_VERSION: "3.1"
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    continue-on-error: false
     steps:
+      - name: Checkout
+        uses: actions/checkout@v2
 
-    - name: 'Checkout GitHub Action'
-      uses: actions/checkout@master
+      - name: Setup DotNet ${{ env.DOTNET_VERSION }} Environment
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
 
-    - name: Setup DotNet ${{ env.DOTNET_VERSION }} Environment
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: ${{ env.DOTNET_VERSION }}
+      - name: "Install azure-functions-core-tools-3"
+        run: sudo apt-get -y install azure-functions-core-tools-3
 
-    - name: 'Install azure-functions-core-tools-3'
-      run: sudo apt-get -y install azure-functions-core-tools-3
+      - name: "Restore packages"
+        run: dotnet restore src/PromADX.Tests/
 
-    - name: 'Publish project to ${{ github.event.inputs.cluster }}'
-      if:
-      env:
-        SP_NAME: ${{ secrets[format('SP_{0}', github.event.inputs.cluster)] }}
-        APPLICATION_SETTINGS: ${{ secrets[format('AS_{0}', github.event.inputs.cluster)] }}
-        FUNCTIONAPP_NAME: ${{ format('{0}-prometheus-adx', github.event.inputs.cluster) }}
-      run: |
-        ./.github/scripts/01-az-login.sh SP_NAME
-        echo "${APPLICATION_SETTINGS}" > local.settings.json
-        func azure functionapp publish $(echo "${FUNCTIONAPP_NAME}" | awk '{print tolower($0)}') --publish-local-settings --overwrite-settings
+      - name: "Build project"
+        run: dotnet build src/PromADX/
+
+      - name: "Run tests"
+        run: dotnet test src/PromADX.Tests/
+
+      - name: "Publish project to ${{ github.event.inputs.cluster }}"
+        env:
+          SP_NAME: ${{ secrets[format('SP_{0}', github.event.inputs.cluster)] }}
+          APPLICATION_SETTINGS: ${{ secrets[format('AS_{0}', github.event.inputs.cluster)] }}
+          FUNCTIONAPP_NAME: ${{ format('{0}-prometheus-adx', github.event.inputs.cluster) }}
+        run: |
+          ./.github/scripts/01-az-login.sh SP_NAME
+          echo "${APPLICATION_SETTINGS}" > src/PromADX/local.settings.json
+          cd src/PromADX
+          func azure functionapp publish $(echo "${FUNCTIONAPP_NAME}" | awk '{print tolower($0)}') --publish-local-settings --overwrite-settings
